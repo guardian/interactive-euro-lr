@@ -1,0 +1,127 @@
+.area-chart-holder-outer{
+    position:relative;
+    width:100%;
+    max-width: none;
+    
+     @include mq(mobileLandscape) {
+        width: 100%;
+    }
+    
+    @include mq(desktop) {
+        width: 100%;
+    }
+}
+
+.week-info-holder{
+    width:100%;    
+    
+    @include mq (tablet){
+        width:240px;
+        float: left;
+    }
+    
+}
+
+.area-chart-holder{
+    position: relative; 
+    width:auto;
+    height:120px;
+    overflow:hidden; 
+    @include fs-data(1);
+    color:$neutral-2;
+      
+   .axis path, .axis line {
+          fill: none;
+          stroke: $neutral-2;
+          shape-rendering: crispEdges;
+        }
+        
+    .area {
+      fill: $neutral-4;
+      opacity:0.7;
+      
+    }
+        
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: $neutral-4;
+      shape-rendering: crispEdges;
+    }
+    
+    .tick text {
+      @include fs-textSans(1);
+        color:$neutral-6;
+    }
+    
+    // .x.axis path {
+    //   display: none;
+    // }
+    
+    .line {
+      fill: none;
+      stroke: $heat-1;
+      stroke-width: 1.5px;
+    }
+    
+    .svg-overlay {
+      fill: none;
+      pointer-events: all;
+    }
+    
+    .focus circle {
+      fill: #b82166;
+      stroke: #b82166;
+    }
+    
+    .focus line {
+      stroke-width: 1;
+      stroke: #b82166;
+    }
+    
+    .infobox{
+        
+    }
+    
+    .infobox rect{
+        fill: #FFF;
+        opacity: 0.9;
+    }
+    
+    .infobox line{
+        stroke: #b82166;
+        stroke-width: 1px;
+    }
+    
+    .infobox text {
+      @include fs-textSans(4);
+        color:$neutral-2;
+    }
+
+    
+    .tickText{
+        @include fs-textSans(1);
+        color:$neutral-5;
+    }
+
+    .y.axis path {
+      display: none;
+    }
+    
+    .y.axis text, .x.axis text {
+        fill:$neutral-2;
+    }
+    
+     .y.axis text{
+         display: none;
+         @include mq(desktop){
+               font-size: 10px; 
+               fill:$neutral-3;
+              display: block;
+         }
+     }
+    
+    .y.axis line {
+      stroke-dasharray: 2,2;
+    }
+}

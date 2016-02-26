@@ -1,6 +1,41 @@
 @import "fonts";
 @import "palette";
 @import "mq";
+
+$highlight-color: #bb1966;
+$graphics-neutral-1:#808080;
+
+$neutral-1: map-get($pasteup-palette, 'neutral-1');
+$neutral-2: map-get($pasteup-palette, 'neutral-2');
+$neutral-3: map-get($pasteup-palette, 'neutral-3');
+$neutral-4: map-get($pasteup-palette, 'neutral-4');
+$neutral-5: map-get($pasteup-palette, 'neutral-5');
+$neutral-6: map-get($pasteup-palette, 'neutral-6');
+$neutral-7: map-get($pasteup-palette, 'neutral-7');
+$neutral-8: map-get($pasteup-palette, 'neutral-8');
+$news-main-1: map-get($pasteup-palette, 'news-main-1');
+$news-main-2: map-get($pasteup-palette, 'news-main-2');
+$news-support-1: map-get($pasteup-palette, 'news-support-1');
+$guardian-brand: map-get($pasteup-palette, 'guardian-brand');
+$guardian-brand-light: map-get($pasteup-palette, 'guardian-brand-light');
+$guardian-brand-dark: map-get($pasteup-palette, 'guardian-brand-dark');
+$maps-support-3: map-get($pasteup-palette, 'maps-support-3');
+$multimedia-support-1: map-get($pasteup-palette, 'multimedia-support-1');
+$multimedia-support-2: map-get($pasteup-palette, 'multimedia-support-2');
+
+$heat-9:#F6F6F6;
+$heat-8:#E6E7E8;
+$heat-7:#D5D8DA;
+$heat-6:#C5CACD;
+$heat-5:#B5BBBF;
+$heat-4:#A4ACB1;
+$heat-3:#949DA3;
+$heat-2:#848F96;
+$heat-1:#738088;
+$heat-0:#63717A;
+
 @import "general";
 @import "share";
-@import "mapStyles"
+@import "mapStyles";
+@import "d3Slider";
+@import "area-chart-view";

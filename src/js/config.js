@@ -16,11 +16,14 @@ System.config({
     "d3": "npm:d3@3.5.16",
     "guardian/iframe-messenger": "github:guardian/iframe-messenger@master",
     "json": "github:systemjs/plugin-json@0.1.0",
+    "lodash": "npm:lodash@4.5.1",
+    "moment": "npm:moment@2.11.2",
     "reqwest": "github:ded/reqwest@1.1.5",
     "text": "github:systemjs/plugin-text@0.0.2",
     "topojson": "npm:topojson@1.6.24",
     "traceur": "github:jmcriffey/bower-traceur@0.0.91",
     "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.91",
+    "twix": "npm:twix@0.9.0",
     "github:jspm/nodelibs-assert@0.1.0": {
       "assert": "npm:assert@1.3.0"
     },
@@ -151,6 +154,13 @@ System.config({
     },
     "npm:inherits@2.0.1": {
       "util": "github:jspm/nodelibs-util@0.1.0"
+    },
+    "npm:lodash@4.5.1": {
+      "buffer": "github:jspm/nodelibs-buffer@0.1.0",
+      "process": "github:jspm/nodelibs-process@0.1.2"
+    },
+    "npm:moment@2.11.2": {
+      "process": "github:jspm/nodelibs-process@0.1.2"
     },
     "npm:optimist@0.3.7": {
       "path": "github:jspm/nodelibs-path@0.1.0",
@@ -285,6 +295,10 @@ System.config({
       "process": "github:jspm/nodelibs-process@0.1.2",
       "rw": "npm:rw@1.1.1",
       "shapefile": "npm:shapefile@0.3.1"
+    },
+    "npm:twix@0.9.0": {
+      "moment": "npm:moment@2.11.2",
+      "process": "github:jspm/nodelibs-process@0.1.2"
     },
     "npm:url@0.10.3": {
       "assert": "github:jspm/nodelibs-assert@0.1.0",
