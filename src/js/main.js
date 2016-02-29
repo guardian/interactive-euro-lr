@@ -46,7 +46,7 @@ function modelData(resp){
         var DateFormat = new Date(manualDateFormat(item.JoinedDate)); 
         item.DateFormat = DateFormat
         item.unixFormat =  (DateFormat.getTime() / 1000).toFixed(0)
-
+        item.Country = item["Country "];
         var newObj = {}
         newObj.Country = item["Country "];
         euCountries.push(newObj);
@@ -90,43 +90,55 @@ function setTimeLineData(){
     endDate  = electionData[0]["unixFormat"];
         _.forEach(euJoinData, function(item, i) {
             if (startDate > item.unixFormat){ startDate = item.unixFormat;};
-            console.log(item.Country +"---------"+moment(item.unixFormat*1000).format("MM-DD-YYYY"))
+            
+
         }); 
         _.forEach(electionData, function(item, i) {
             if (endDate < item.unixFormat){ endDate =  item.unixFormat};
-
-
+                
+                //console.log(moment(item.DateFormat).format('MM-DD-YYYY'))
+                //console.log( item )//item.Country+"---------"+moment(item.DateFormat).format('MM-DD-YYYY')
             
         });
 
-
-
-
-
     addD3Slider(startDate, endDate);
-
     getDatesRangeArray(startDate, endDate);
+
 }
 
 
 var getDatesRangeArray = function (startDate, endDate) {
-
-    console.log(moment(endDate).format("MM-DD-YYYY"))
+    startDate = moment(startDate).format("MM-DD-YYYY");
+    console.log(startDate, endDate)   //(moment(endDate).format("MM-DD-YYYY"))
 
     var itr = moment.twix(startDate, endDate).iterate("months");
     var range=[];
     
-
     while(itr.hasNext()){
         range.push(itr.next().format("YYYY-M-D"))
     }
 
     var graphDTemp = getGraphData(range);
-
     var graphD = getLRCount(graphDTemp);
+}
 
-    
-};
+function getLRCount(a){
+    var L = 0;
+    var R = 0;
+
+    _.forEach(a , function(item){
+
+                _.forEach(item.lrArr, function(o){
+                    if(o.leftorright == "L"){ L++ }
+                    if(o.leftorright == "R"){ R++ }
+                })
+
+            item.leftCount = L; item.rightCount = R;
+
+        })
+
+    return a;
+}
 
 
 function getGraphData(range){
@@ -136,13 +148,12 @@ function getGraphData(range){
     var tempGraphData = [];
 
         _.forEach(range, function(item, key){ // look for each month on the timeline
+
             var newObj={};
             var tempDateUTC = moment(item).unix(); // set utc date for newObj
             
             newObj.displayDate = moment.unix(tempDateUTC).format("DD/MMM/YYYY"); // adding a legible date
             newObj.lrArr = [];
-
-            
 
                     _.forEach(electionDataByCountry, function(CountryElections,key){
                         
@@ -180,30 +191,14 @@ function getGraphData(range){
 
                 // set the last date vars and push to outputArr    
                 newObj.utcDate = tempDateUTC; 
-       
                 tempGraphData.push(newObj)
+
         });
     console.log(tempGraphData)
     return tempGraphData;
 }
 
-function getLRCount(a){
-    var L = 0;
-    var R = 0;
-    _.forEach(a , function(item){
-        
-                _.forEach(item.lrArr, function(o){
 
-                    if(o.leftorright == "L"){ L++ }
-                    if(o.leftorright == "R"){ R++ }
-                })
-            item.leftCount = L; item.rightCount = R;
-
-
-        })
-
-    return a;
-}
 
 
 function addD3Map(){
