@@ -45,6 +45,7 @@ function modelData(resp){
     _.forEach(euJoinData, function(item, i) {
         var DateFormat = new Date(manualDateFormat(item.JoinedDate)); 
         item.DateFormat = DateFormat
+        item.compDate = moment(DateFormat).format("YYYYMMDD");
         item.unixFormat =  (DateFormat.getTime() / 1000).toFixed(0)
         item.Country = item["Country "];
         var newObj = {}
@@ -55,10 +56,9 @@ function modelData(resp){
      _.forEach(electionData, function(item, i) {
          var DateFormat = new Date(manualDateFormat(item.DateCameToPower))   
          item.DateFormat = DateFormat;   //MM-DD-YYYY
+         item.compDate = moment(DateFormat).format("YYYYMMDD")
          item.unixFormat =  (item.DateFormat.getTime() / 1000).toFixed(0)
          item.Country = formatStr(item.Country)
-
-         console.log(moment(item.DateFormat).format('MM-DD-YYYY')+"---------"+item.DateFormat+"-------"+item.HeadofGovernment)
      
      }) 
 
@@ -78,27 +78,18 @@ function buildView(){
 
 
 function setTimeLineData(){
-
-    console.log("ON FRIDAY  ---  START WORK HERE THE END DATE HAS LOST FORMATTING And Is resetting to 1970")
-
-    console.log(euJoinData);
-
-    console.log(electionData);
-
-
-    startDate = euJoinData[0]["unixFormat"];
-    endDate  = electionData[0]["unixFormat"];
+    startDate = euJoinData[0]["compDate"];
+    endDate  = electionData[0]["compDate"];
         _.forEach(euJoinData, function(item, i) {
-            if (startDate > item.unixFormat){ startDate = item.unixFormat;};
+            if (startDate > item.compDate){ startDate = item.compDate;};
             
 
         }); 
         _.forEach(electionData, function(item, i) {
-            if (endDate < item.unixFormat){ endDate =  item.unixFormat};
-                
+
+            if (endDate < item.compDate){ endDate =  item.compDate};
                 //console.log(moment(item.DateFormat).format('MM-DD-YYYY'))
-                //console.log( item )//item.Country+"---------"+moment(item.DateFormat).format('MM-DD-YYYY')
-            
+                //console.log( item )//item.Country+"---------"+moment(item.DateFormat).format('MM-DD-YYYY') 
         });
 
     addD3Slider(startDate, endDate);
@@ -108,94 +99,73 @@ function setTimeLineData(){
 
 
 var getDatesRangeArray = function (startDate, endDate) {
-    startDate = moment(startDate).format("MM-DD-YYYY");
+    
     console.log(startDate, endDate)   //(moment(endDate).format("MM-DD-YYYY"))
 
     var itr = moment.twix(startDate, endDate).iterate("months");
     var range=[];
     
     while(itr.hasNext()){
-        range.push(itr.next().format("YYYY-M-D"))
+        range.push(itr.next().format("MM-DD-YYYY"))
     }
 
     var graphDTemp = getGraphData(range);
-    var graphD = getLRCount(graphDTemp);
+
+    console.log(graphDTemp)
 }
 
-function getLRCount(a){
-    var L = 0;
-    var R = 0;
 
-    _.forEach(a , function(item){
-
-                _.forEach(item.lrArr, function(o){
-                    if(o.leftorright == "L"){ L++ }
-                    if(o.leftorright == "R"){ R++ }
-                })
-
-            item.leftCount = L; item.rightCount = R;
-
-        })
-
-    return a;
-}
 
 
 function getGraphData(range){
 
-    console.log(range)
-
     var tempGraphData = [];
+
+    console.log(range.length)
 
         _.forEach(range, function(item, key){ // look for each month on the timeline
 
+            var checkDate =  moment(item).format("YYYYMMDD"); 
             var newObj={};
-            var tempDateUTC = moment(item).unix(); // set utc date for newObj
-            
-            newObj.displayDate = moment.unix(tempDateUTC).format("DD/MMM/YYYY"); // adding a legible date
-            newObj.lrArr = [];
+            var tempArr = [];
+            newObj.compDate = checkDate; // adding a legible date 
 
-                    _.forEach(electionDataByCountry, function(CountryElections,key){
+                    _.forEach(electionDataByCountry, function(CountryElections){
                         
-
-                        // CountryElections returns ---
-                            // Country: "UK"
-                            // DateCameToPower: "19/06/1970"
-                            // DateFormat: Sun Jul 19 1970 00:00:00 GMT+0000 (BST)
-                            // HeadofGovernment: "Edward Heath"
-                            // Totalitarian: "0"
-                            // leftorright: "R"
-                            // partyOrCoalition: "Conservative"
-                            // unixFormat: 17193600000
-
-
-                            var tempLr = {};
-
-                            tempLr.country = key;
-
-                                _.forEach(CountryElections, function(election){
-                                    // something wrong below as its returning a number lower than tempDatUTC but NOT the highest number untempDatUTC which is what we wnat
-                                    // sort election on unixFormat 
-                                    if(election.unixFormat < tempDateUTC){
-                                        
-                                        tempLr.leftorright = election.leftorright;
-
-                                    }
-
-                                });
-
-                        newObj.lrArr.push(tempLr)
+                         var tempObj = {};
                         
-                        
+                            _.forEach(CountryElections, function(election){
+                                // continue here
+                                
+                                if (checkDate > election.compDate){  tempObj.lr = election.leftorright; tempObj.Country=election.Country }
+                            })
+
+                        tempArr.push(tempObj)  
+
                     });
-
+            newObj.lrArr = tempArr;        
+            tempGraphData.push(newObj)        
                 // set the last date vars and push to outputArr    
-                newObj.utcDate = tempDateUTC; 
-                tempGraphData.push(newObj)
+                //tempGraphData.push(newObj)
 
         });
-    console.log(tempGraphData)
+    
+    _.forEach(tempGraphData, function(item){
+        var lrVal = 0;
+
+            _.forEach(item.lrArr, function(o){
+
+                    if (o.lr == "L"){ lrVal=lrVal-1 }
+                    if (o.lr == "R"){ lrVal=lrVal+1 }
+            })
+
+        item.lrCount = lrVal;    
+        
+
+    })
+
     return tempGraphData;
+
 }
 
 
@@ -230,19 +200,18 @@ function addD3Map(){
         .attr("d", path); 
 }
 
-function addD3Slider(minDateUnix,maxDateUnix){
+function addD3Slider(minDate,maxDate){
     var sliderDiv = document.getElementById('slider3');
     sliderDiv.innerHTML = " ";
     // var minDateUnix = moment('2014-07-01', "YYYY MM DD").unix();
     // var maxDateUnix = moment('2015-07-21', "YYYY MM DD").unix();
-    var secondsInDay = 60 * 60 * 24;
-
+    var timeValue = 28; //set to 28 days
 
         d3.select('#slider3').call(d3Slider()
           .axis(true)
-            .min(minDateUnix)
-            .max(maxDateUnix)
-            .step(secondsInDay)
+            .min(minDate)
+            .max(maxDate)
+            .step(timeValue)
 
           .on("slide", function(evt, value) {
                     // var newData = _(site_data).filter( function(site) {
@@ -256,10 +225,10 @@ function addD3Slider(minDateUnix,maxDateUnix){
 
 function upDateMapView(n){
 
-
+console.log(n)
     _.forEach(electionDataByCountry, function(item, key) {
         _.forEach(item, function(obj){
-                if(obj.unixFormat < n){
+                if(obj.compDate < n){
                     item.govNow = obj.leftorright;
                 }
         })

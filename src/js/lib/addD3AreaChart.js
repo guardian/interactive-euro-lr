@@ -8,8 +8,8 @@ export default function addD3AreaChart(electionData){
     var dataset = electionData;
 
     var margin = {top: 18, right: 20, bottom: 6, left: 2},
-        width = 740,
-        height = 96 - margin.top - margin.bottom;
+        width = 140,
+        height = 600 - margin.top - margin.bottom;
 
     var parseDate = d3.time.format("%Y-%m-%d").parse, bisectDate = d3.bisector(function(d) { return d.date; }).left;
 
