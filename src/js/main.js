@@ -11,7 +11,7 @@ import euroMap from './mapData/subunits.json!json'
 import moment from 'moment'
 import twix from 'twix'
 import 'moment/locale/en-gb';
-moment.locale('en-gb')
+moment.locale('en-gb') //console.log(moment.locale())
 
 var _ = lodash;
 var shareFn = share('Interactive title', 'http://gu.com/p/URL', '#Interactive');
@@ -19,9 +19,6 @@ var electionData, electionDataByCountry, euCountries, euJoinData, startDate, end
 
 
 export function init(el, context, config, mediator) {
-
-    console.log(moment.locale())
-
 
     el.innerHTML = mainHTML.replace(/%assetPath%/g, config.assetPath);
     
@@ -71,8 +68,7 @@ function modelData(resp){
 function buildView(){
 
         addD3Map(); 
-        setTimeLineData(); 
-        addD3AreaChart(electionData);
+        setTimeLineData();
         
 }
 
@@ -100,7 +96,7 @@ function setTimeLineData(){
 
 var getDatesRangeArray = function (startDate, endDate) {
     
-    console.log(startDate, endDate)   //(moment(endDate).format("MM-DD-YYYY"))
+    //console.log(startDate, endDate)   (moment(endDate).format("MM-DD-YYYY"))
 
     var itr = moment.twix(startDate, endDate).iterate("months");
     var range=[];
@@ -111,7 +107,7 @@ var getDatesRangeArray = function (startDate, endDate) {
 
     var graphDTemp = getGraphData(range);
 
-    console.log(graphDTemp)
+    addD3AreaChart(graphDTemp)
 }
 
 
@@ -120,8 +116,6 @@ var getDatesRangeArray = function (startDate, endDate) {
 function getGraphData(range){
 
     var tempGraphData = [];
-
-    console.log(range.length)
 
         _.forEach(range, function(item, key){ // look for each month on the timeline
 
