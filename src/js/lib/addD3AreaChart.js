@@ -19,11 +19,15 @@ export default function addD3AreaChart(data){
 
         var xAxis = d3.svg.axis()
             .scale(x)
-            .orient("bottom");
+            .orient("bottom")
+            .tickSize(-height)
+            .tickPadding(6);
 
         var yAxis = d3.svg.axis()
             .scale(y)
-            .orient("left");
+            .orient("left")
+            .tickSize(-width)
+            .tickPadding(6);
 
         var line = d3.svg.line()
             .interpolate("basis")
@@ -38,10 +42,19 @@ export default function addD3AreaChart(data){
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
         
          data.forEach(function(d) {
-            console.log(d)
             d.date = parseDate(d.compDate);
             d.temperature = + d.lrCount;
           });
+
+         var start = Date.UTC(data[0].date.getFullYear(), data[0].date.getMonth(), data[0].date.getDate()),
+            step = 1000 * 60 * 60 * 24 * 28; // 4 weeks as set in main.js;
+
+         
+
+         //data = data.map(function(t, i) { return [new Date(start + i * step), t]; });
+            //x.domain([start, start + (offsets.length - 1) * step]);
+
+          console.log(data)
 
           x.domain([d3.max(data, function(d) { return d.temperature; }), -16]);
           y.domain([data[data.length - 1].date, data[0].date]);
@@ -51,12 +64,14 @@ export default function addD3AreaChart(data){
               .attr("gradientUnits", "userSpaceOnUse")
               .attr("x1", -16).attr("y1", y(0))
               .attr("x2", 16).attr("y2", y(0))
+
             .selectAll("stop")
               .data([
                 {offset: "0%", color: "red"},
                 {offset: "50%", color: "orange"},
                 {offset: "100%", color: "navy"}
               ])
+
             .enter().append("stop")
               .attr("offset", function(d) { return d.offset; })
               .attr("stop-color", function(d) { return d.color; });
@@ -90,12 +105,14 @@ export default function addD3AreaChart(data){
               .attr("x",-10)
               .attr("height", 20);
 
-              infobox.append("line")
+              
+
+            var focus = svg.append("g")
+              .attr("class", "focus");
+
+              focus.append("line")
               .attr("x1", width)
               .attr("x2", 0);
-
-              var focus = svg.append("g")
-              .attr("class", "focus");
 
               focus.append("circle")
               .attr("r", 2);
@@ -104,22 +121,31 @@ export default function addD3AreaChart(data){
               .attr("x", -6)
               .attr("y", -9);
 
-              svg.append("rect")
-                .attr("class", "svg-overlay")
-                .attr("width", width)
-                .attr("height", height)
-                .on('click', function(e) { console.log(' clicking area', e); })
-                .on("mousemove", mousemove());
+            svg.append("rect")
+              .attr("class", "svg-overlay")
+              .attr("width", width)
+              .attr("height", height)
+              .on('click', function(e) { console.log(' clicking area', e); })
+              .on("mousemove", mousemove );
 
-                
+function mousemove() {
+          console.log('GET MOUSE Y');
+          
+          // var d = data[Math.round((y.invert(d3.mouse(this)[0]) - start) / step)];
 
-      function mousemove() {
-          var d = offsets[Math.round((x.invert(d3.mouse(this)[0]) - start) / step)];
-          focus.select("circle").attr("transform", "translate(" + x(d[0]) + "," + y(d[1]) + ")");
-          focus.select(".x").attr("transform", "translate(" + x(d[0]) + ",0)");
-          focus.select(".y").attr("transform", "translate(0," + y(d[1]) + ")");
+
+          var newY =  d3.mouse(this)[1]
+          var newX =  x.invert(d3.mouse(this)[0])
+
+          console.log(d3.mouse(this))
+          focus.select("line").attr("transform", "translate( 0 ,"+ newY +" )");
+          focus.select("circle").attr("transform", "translate( 0 ,"+ newY +" )");
+          //focus.select(".x").attr("transform", "translate(" + x(d[0]) + ",0)");
+          //focus.select(".y").attr("transform", "translate(0," + y(d[1]) + ")");
           svg.selectAll(".x.axis path").style("fill-opacity", Math.random()); // XXX Chrome redraw bug
         }
+
+      
 }
 
 
