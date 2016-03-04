@@ -8,7 +8,7 @@ export default function addD3AreaChart(data){
 
         var margin = {top: 20, right: 20, bottom: 30, left: 50},
             width = 960 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom;
+            height = 240 - margin.top - margin.bottom;
 
         var parseDate = d3.time.format("%Y%m%d").parse;
 
@@ -50,12 +50,12 @@ export default function addD3AreaChart(data){
           svg.append("linearGradient")
               .attr("id", "temperature-gradient")
               .attr("gradientUnits", "userSpaceOnUse")
-              .attr("x1", 0).attr("y1", y(50))
-              .attr("x2", 0).attr("y2", y(60))
+              .attr("x1", 0).attr("y1", y(-7))
+              .attr("x2", 0).attr("y2", y(16))
             .selectAll("stop")
               .data([
                 {offset: "0%", color: "red"},
-                {offset: "10%", color: "blue"},
+                {offset: "50%", color: "orange"},
                 {offset: "100%", color: "blue"}
               ])
             .enter().append("stop")
