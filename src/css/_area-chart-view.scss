@@ -14,3 +14,42 @@
   stroke: url(#temperature-gradient);
   stroke-width: 1.5px;
 }
+
+.svg-overlay {
+      fill: none;
+      pointer-events: all;
+    }
+    
+.focus circle {
+  fill: #b82166;
+  stroke: #b82166;
+}
+
+.focus line {
+  stroke-width: 1;
+  stroke: #b82166;
+}
+
+.infobox{
+    
+}
+
+.infobox rect{
+    fill: #FFF;
+    opacity: 0.9;
+}
+
+.infobox line{
+    stroke: #b82166;
+    stroke-width: 1px;
+}
+
+.infobox text {
+  @include fs-textSans(4);
+    color:$neutral-2;
+}
+
+.svg-overlay {
+  fill: none;
+  pointer-events: all;
+}
