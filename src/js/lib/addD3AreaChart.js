@@ -46,15 +46,16 @@ export default function addD3AreaChart(data){
             d.temperature = + d.lrCount;
           });
 
-         var start = Date.UTC(data[0].date.getFullYear(), data[0].date.getMonth(), data[0].date.getDate()),
-            step = 1000 * 60 * 60 * 24 * 28; // 4 weeks as set in main.js;
+         var start = Date.UTC(data[0].date.getFullYear(), data[0].date.getMonth(), data[0].date.getDate());
+         
 
          
 
-         //data = data.map(function(t, i) { return [new Date(start + i * step), t]; });
-            //x.domain([start, start + (offsets.length - 1) * step]);
+        var offsets = data.map(function(t, i) { return [ Date.UTC(t.date.getFullYear(), t.date.getMonth(), t.date.getDate()), t.temperature]; });
+       
 
-          console.log(data)
+
+          console.log(offsets)
 
           x.domain([d3.max(data, function(d) { return d.temperature; }), -16]);
           y.domain([data[data.length - 1].date, data[0].date]);
@@ -129,17 +130,16 @@ export default function addD3AreaChart(data){
               .on("mousemove", mousemove );
 
 function mousemove() {
-          console.log('GET MOUSE Y');
+       
           
           // var d = data[Math.round((y.invert(d3.mouse(this)[0]) - start) / step)];
 
-
-          var newY =  d3.mouse(this)[1]
+          var newDate =  y.invert(d3.mouse(this)[1])
           var newX =  x.invert(d3.mouse(this)[0])
 
-          console.log(d3.mouse(this))
-          focus.select("line").attr("transform", "translate( 0 ,"+ newY +" )");
-          focus.select("circle").attr("transform", "translate( 0 ,"+ newY +" )");
+          console.log(newDate)
+          focus.select("line").attr("transform", "translate( 0 ,"+ d3.mouse(this)[1] +" )");
+          focus.select("circle").attr("transform", "translate( 0 ,"+ d3.mouse(this)[1] +" )");
           //focus.select(".x").attr("transform", "translate(" + x(d[0]) + ",0)");
           //focus.select(".y").attr("transform", "translate(0," + y(d[1]) + ")");
           svg.selectAll(".x.axis path").style("fill-opacity", Math.random()); // XXX Chrome redraw bug
