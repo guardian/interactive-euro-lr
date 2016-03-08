@@ -1,7 +1,6 @@
 import reqwest from 'reqwest'
 import mainHTML from './text/main.html!text'
-import share from './lib/share'
-import addD3AreaChart from './lib/addD3AreaChart'
+
 import d3 from 'd3'
 
 import lodash from 'lodash'
@@ -11,6 +10,9 @@ import euroMap from './mapData/subunits.json!json'
 import moment from 'moment'
 import twix from 'twix'
 import 'moment/locale/en-gb';
+
+import share from './lib/share'
+import addD3AreaChart from './lib/addD3AreaChart'
 moment.locale('en-gb') //console.log(moment.locale())
 
 var _ = lodash;
@@ -33,7 +35,7 @@ export function init(el, context, config, mediator) {
         var network = shareEl.getAttribute('data-network');
         shareEl.addEventListener('click',() => shareFn(network));
     });
-}
+
 
 function modelData(resp){
     electionData = resp.sheets["ElectionsByCountry]"];  // data entered with "]" at end of value
@@ -108,6 +110,11 @@ var getDatesRangeArray = function (startDate, endDate) {
     var graphDTemp = getGraphData(range);
 
     addD3AreaChart(graphDTemp)
+
+   
+
+
+
 }
 
 
@@ -211,6 +218,7 @@ function addD3Slider(minDate,maxDate){
                     // var newData = _(site_data).filter( function(site) {
                     //   return site.created_at < value;
                     // })
+
            upDateMapView(value)
             //displaySites(newData);
           })
@@ -240,7 +248,7 @@ function upDateCountries(){
          var currClipArr = getCurrClipArr(key);
 
                 _.forEach(currClipArr, function(o){
-                        updateCountryClass(d3.select(o), item.govNow)  
+                    updateCountryClass(d3.select(o), item.govNow);  
                 })
          
     } );   
@@ -286,4 +294,4 @@ function manualDateFormat(s){
     return(s) 
 }
 
-
+}

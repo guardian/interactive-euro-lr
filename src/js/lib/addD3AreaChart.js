@@ -2,6 +2,9 @@ import d3 from 'd3'
 
 export default function addD3AreaChart(data){
 
+
+      console.log(data)
+
         var targetDiv = document.getElementById('areaChartHolder');
             targetDiv.innerHTML = " ";
    
@@ -43,22 +46,44 @@ export default function addD3AreaChart(data){
         
          data.forEach(function(d) {
             d.date = parseDate(d.compDate);
+            d.msec = d.date.getTime()
             d.temperature = + d.lrCount;
           });
 
-         var start = Date.UTC(data[0].date.getFullYear(), data[0].date.getMonth(), data[0].date.getDate());
-         
+        var start = data[0].date;
+        var startMsec = start.getTime();
+        var CurrentDate = new Date(1958, 0, 1);
+        var tempDate;
+        var stepMsec;
+        var tempMsec;
+        var step;
 
-         
+        
 
-        var offsets = data.map(function(t, i) { return [ Date.UTC(t.date.getFullYear(), t.date.getMonth(), t.date.getDate()), t.temperature]; });
-       
+        var offsets = data.map(function(t, i) { 
+          //var step = start
 
+          tempDate = new Date(new Date(start).setMonth(start.getMonth()+i));
 
-          console.log(offsets)
+          tempMsec = tempDate.getTime();
+
+          if(!isNaN(stepMsec)){ console.log (Math.abs(tempMsec-stepMsec))}
+          
+          stepMsec = tempMsec;
+
+          return [ Date.UTC(t.date.getFullYear(), t.date.getMonth(), t.date.getDate()), t.temperature, t.date]; 
+
+        });
+
+        //make step 1 month
+        var step = height/data.length;
+
+          console.log(step);
+
+          console.log(start);
 
           x.domain([d3.max(data, function(d) { return d.temperature; }), -16]);
-          y.domain([data[data.length - 1].date, data[0].date]);
+          y.domain([data[data.length - 1].msec, data[0].msec]);
 
           svg.append("linearGradient")
               .attr("id", "temperature-gradient")
@@ -106,8 +131,6 @@ export default function addD3AreaChart(data){
               .attr("x",-10)
               .attr("height", 20);
 
-              
-
             var focus = svg.append("g")
               .attr("class", "focus");
 
@@ -131,15 +154,29 @@ export default function addD3AreaChart(data){
 
 function mousemove() {
        
-          
-          // var d = data[Math.round((y.invert(d3.mouse(this)[0]) - start) / step)];
-
           var newDate =  y.invert(d3.mouse(this)[1])
-          var newX =  x.invert(d3.mouse(this)[0])
+          var newX =  x.invert(d3.mouse(this)[0]) //x(d[0]) 
 
-          console.log(newDate)
+          var d = Math.round(y.invert(d3.mouse(this)[1]));
+
+          var da = new Date(d);
+
+          _.forEach(data, function(item){
+                var newDate;
+                var obj;
+                if (item.msec < d){
+                  newDate = item.date
+                  obj = item;
+
+                }
+                console.log(obj)
+
+          })
+
+
+          
           focus.select("line").attr("transform", "translate( 0 ,"+ d3.mouse(this)[1] +" )");
-          focus.select("circle").attr("transform", "translate( 0 ,"+ d3.mouse(this)[1] +" )");
+          focus.select("circle").attr("transform", "translate( "+ d3.mouse(this)[0] +" , "+ d3.mouse(this)[1] +" )");
           //focus.select(".x").attr("transform", "translate(" + x(d[0]) + ",0)");
           //focus.select(".y").attr("transform", "translate(0," + y(d[1]) + ")");
           svg.selectAll(".x.axis path").style("fill-opacity", Math.random()); // XXX Chrome redraw bug
