@@ -1,7 +1,13 @@
+// $c-accent: #b82166;
+$c-background: #6bb8ee;
+$c-accent: #194377;
+$c-text: #FFF;
+$c-neutral-one: #FFF;
+
 .axis path,
 .axis line {
   fill: none;
-  stroke: #000;
+  stroke: $c-neutral-one;
   shape-rendering: crispEdges;
 }
 
@@ -19,6 +25,7 @@
 }
 
 
+
 .line {
   fill: none;
   stroke: url(#temperature-gradient);
@@ -31,13 +38,13 @@
     }
     
 .focus circle {
-  fill: #b82166;
-  stroke: #b82166;
+  fill:  $c-accent;
+  stroke: $c-accent;
 }
 
 .focus line {
   stroke-width: 1;
-  stroke: #b82166;
+  stroke: $c-accent;
 }
 
 .infobox{
@@ -50,7 +57,7 @@
 }
 
 .infobox line{
-    stroke: #b82166;
+    stroke: $c-accent;
     stroke-width: 1px;
 }
 

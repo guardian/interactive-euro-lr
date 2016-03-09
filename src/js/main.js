@@ -63,8 +63,7 @@ function modelData(resp){
      }) 
 
     electionDataByCountry = _.groupBy(electionData, function(item) { return item.Country});
-
-    buildView()  
+    buildView();
 }
 
 
@@ -171,12 +170,12 @@ function addD3Map(){
     var margin = {top:0, right:0, bottom:0, left:220 }
     
     var width = 960,
-        height = 480;
+        height = 640;
 
     var projection = d3.geo.mercator()
         .center([20, 50])
         .rotate([4.4, 0])
-        .scale(1200 * 0.4)
+        .scale(1200 * 0.7)
         .translate([width / 2, height / 2]);
 
     var path = d3.geo.path()
@@ -245,6 +244,15 @@ function upDateCountries(){
     } );   
  }
 
+ function upDateTexts(d){
+    console.log(d);
+
+    var dateHolder = document.getElementById("dateHolder");
+
+    dateHolder.innerHTML = moment(d.compDate).format('LL')
+
+ }
+
 
 function getCurrClipArr(s){
     //console.log(s)
@@ -292,7 +300,7 @@ function addD3AreaChart(data){
    
         var margin = {top: 0, right: 20, bottom: 0, left: 50},
             width = 240 - margin.left - margin.right,
-            height = 480 - margin.top - margin.bottom;
+            height = 360 - margin.top - margin.bottom;
 
         var parseDate = d3.time.format("%Y%m%d").parse;
 
@@ -433,6 +441,7 @@ function mousemove() {
           svg.selectAll(".x.axis path").style("fill-opacity", Math.random()); // XXX Chrome redraw bug
 
           upDateMapView(obj[2].compDate)
+          upDateTexts(obj[2])
 
         }
 

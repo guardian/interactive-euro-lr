@@ -1,23 +1,33 @@
+$c-background: #CCC;
+$c-accent: #194377;
+$c-text: #FFF;
+$c-neutral-one: #EFEFEF;
+
+$c-left: #990000;
+$c-right: #000099;
+$c-coalition:#009900;
+$c-totalitarian:#999;
+
 .europe {
-    fill: #CCC;
+    fill: $c-background;
 }
 
 .none-europe {
-    fill: #EFEFEF;
+    fill: $c-neutral-one;
 }
 
 .left-wing {
-    fill: #990000;
+    fill: darken($c-left, 7%);
 }
 
 .right-wing {
-    fill: #000099;
+    fill: darken($c-right, 7%);
 }
 
 .totalitarian {
-    fill: #666;
+    fill: $c-totalitarian;
 }
 
 .coalition{
-	fill:#009900;
+	fill:$c-coalition;
 }
