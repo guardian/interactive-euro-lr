@@ -172,10 +172,13 @@ function addD3Map(){
     var width = 960,
         height = 640;
 
+    //var center = d3.geo.centroid(json);    
+
     var projection = d3.geo.mercator()
         .center([20, 50])
         .rotate([4.4, 0])
         .scale(1200 * 0.7)
+
         .translate([width / 2, height / 2]);
 
     var path = d3.geo.path()
@@ -191,7 +194,8 @@ function addD3Map(){
     .enter().append("path")
         .attr("class", function(d) { var elClass = "none-europe "; if (d.properties.continent == "Europe"){ elClass = "europe" }; return elClass; }) // + d.id
         .attr("id", function(d){  return "shp_"+ formatStr(d.properties.name) }) //console.log(d);
-        .attr("d", path); 
+        .attr("d", path);
+
 
         setTimeLineData();
 }
@@ -330,7 +334,6 @@ function addD3AreaChart(data){
         var svg = d3.select(targetDiv).append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
-
           .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
         
@@ -357,19 +360,27 @@ function addD3AreaChart(data){
           svg.append("linearGradient")
               .attr("id", "temperature-gradient")
               .attr("gradientUnits", "userSpaceOnUse")
-              .attr("x1", -16).attr("y1", y(0))
-              .attr("x2", 16).attr("y2", y(0))
+              .attr("x1", 0).attr("y1", y(0))
+              .attr("x2", 100).attr("y2", y(0))
 
             .selectAll("stop")
               .data([
-                {offset: "0%", color: "red"},
-                {offset: "50%", color: "orange"},
-                {offset: "100%", color: "navy"}
+                {offset: "0%", color: "#480000"},
+                // {offset: "10%", color: "#968000"},
+                // {offset: "20%", color: "#9c0000"},    
+                // {offset: "30%", color: "#d61d00"},    
+                {offset: "40%", color: "#ff5b32"},  
+                {offset: "50%", color: "#efefef"},
+                {offset: "60%", color: "#4982b9"},    
+                // {offset: "70%", color: "#005689"},    
+                // {offset: "80%", color: "#194377"},
+                // {offset: "90%", color: "#002e5b"},
+                {offset: "100%", color: "#000232"}  
               ])
 
             .enter().append("stop")
-              .attr("offset", function(d) { return d.offset; })
-              .attr("stop-color", function(d) { return d.color; });
+              .attr("offset", function(d) { console.log(d.offset); return d.offset; })
+              .attr("stop-color", function(d) { console.log(d); return d.color; });
 
           svg.append("g")
               .attr("class", "x axis")
@@ -391,22 +402,25 @@ function addD3AreaChart(data){
               .attr("class", "line")
               .attr("d", line);
 
-          var infobox = svg.append("g")
-              .attr("class", "infobox")
-              .attr("id", "infoBox");
+          // var infobox = svg.append("g")
+          //     .attr("class", "infobox")
+          //     .attr("id", "infoBox");
 
-              infobox.append("rect")
-              .attr("width", width)
-              .attr("x",-10)
-              .attr("height", 20);
+              // infobox.append("rect")
+              // .attr("width", width)
+              // .attr("x",-10)
+              // .attr("height", 20);
+            // infobox.append("text")
+            //       .attr("x", -6)
+            //       .attr("y", -9);
 
             var focus = svg.append("g")
               .attr("class", "focus");
 
-              focus.append("rect")
-              .attr("width", width)
-              .attr("x",-10)
-              .attr("height", 20);
+              // focus.append("rect")
+              // .attr("width", width)
+              // .attr("x",-10)
+              // .attr("height", 20);
 
               focus.append("line")
               .attr("x1", width)
@@ -414,10 +428,6 @@ function addD3AreaChart(data){
 
               focus.append("circle")
               .attr("r", 5);
-
-              infobox.append("text")
-              .attr("x", -6)
-              .attr("y", -9);
 
             svg.append("rect")
               .attr("class", "svg-overlay")

@@ -1,12 +1,28 @@
-body,
-figure.interactive {
-    margin: 0;
-    padding: 0;
-    background-color: #dcdcdc;
-}
+
 
 // Link styles don't exist on the app
-a {
+
+
+.gv-interactive-container {
+
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    margin: 0 auto;
+    box-sizing: border-box;
+    background-color: white;
+    background-color: #FFF;
+    padding: 0;
+    font-family: "Guardian Text Egyptian Web";
+    color:#767676;
+    font-size:18px;
+    line-height:1.25em;
+
+    h1,h2,h3,h4,h5,h6{
+        font-family: "Guardian Egyptian Web";
+        color:#333;
+    }
+    a {
     &,
     &:hover,
     &:active {
@@ -18,23 +34,14 @@ a {
         text-decoration: underline;
     }
 }
-
-.interactive-container {
-    margin: 0 auto;
-    box-sizing: border-box;
-    background-color: white;
-
-    padding: 10px;
-    @include mq(mobileLandscape) {
-        padding: 20px;
-    }
+   
 
     @each $bp in (tablet, desktop, leftCol, wide) {
         @include mq($bp) {
             max-width: map-get($mq-breakpoints, $bp);
         }
     }
-}
+
 
 .interactive-es6-headline {
 	@include fs-headline(5);
@@ -59,3 +66,5 @@ a {
 .fonts__text-egyptian { @include fs-bodyCopy(2); }
 .fonts__sans { @include f-headlineSans; }
 .fonts__text-sans { @include fs-textSans(4); }
+
+}
