@@ -4,6 +4,21 @@ $c-accent: #194377;
 $c-text: #FFF;
 $c-neutral-one: #FFF;
 
+$c-left: #d61d00;
+$c-right: #005689;
+$c-coalition:#009900;
+$c-totalitarian:#999;
+
+
+
+.area-left {
+    fill: lighten($c-left, 2%);
+}
+
+.area-right {
+    fill: lighten($c-right, 2%);
+}
+
 .axis path,
 .axis line {
   fill: none;
@@ -24,7 +39,11 @@ $c-neutral-one: #FFF;
   stroke-dasharray: 2,3;
 }
 
-
+button {
+  position: absolute;
+  right: 50px;
+  top: 10px;
+}
 
 .line {
   fill: none;

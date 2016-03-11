@@ -107,33 +107,33 @@ var getDatesRangeArray = function (startDate, endDate) {
 
     var graphDTemp = getGraphData(range);
 
-    addD3AreaChart(graphDTemp)
+
+    addD3Chart(graphDTemp,"blue")
 
 }
 
 
 
 function getGraphData(range){
-    var format = d3.time.format("%m/%d/%Y");
+
     var tempGraphData = [];
 
         _.forEach(range, function(item, key){ // look for each month on the timeline
-
-           var checkDate =  moment(item).format("YYYYMMDD"); 
-            var d3Date =  moment(item).format("D-MMM-Y");
+            
+            var checkDate =  moment(item).format("YYYYMMDD"); 
+            var d3Date =  moment(item).format("M/D/Y");
             var newObj={};
             var tempArr = [];
             newObj.compDate = checkDate; // adding a legible date 
-            newObj.date = d3Date;
-
+            newObj.d3Date = d3Date;
                     _.forEach(electionDataByCountry, function(CountryElections){
                         
                          var tempObj = {};
                         
                             _.forEach(CountryElections, function(election){
-                                // continue here
                                 
                                 if (checkDate > election.compDate){  tempObj.lr = election.leftorright; tempObj.Country=election.Country }
+                            
                             })
 
                         tempArr.push(tempObj)  
@@ -159,7 +159,6 @@ function getGraphData(range){
 
         item.leftValue = leftValue;  
         item.rightValue = rightValue; 
-        item.close = rightValue;
         item.lrCount = lrVal;   
         
 
@@ -252,7 +251,7 @@ function upDateCountries(){
                     updateCountryClass(d3.select(o), item.govNow);  
                 })
          
-    } );   
+    });   
  }
 
  function upDateTexts(d){
@@ -304,123 +303,180 @@ function manualDateFormat(s){
     return(s) 
 }
 
-function addD3AreaChart(data){
-        var margin = {top: 0, right: 5, bottom: 12, left: 5},
-          width = 240 - margin.left - margin.right,
-          height = 360 - margin.top - margin.bottom;
 
-        var parseDate = d3.time.format("%d-%b-%Y").parse;
+;
 
-        var x = d3.scale.linear()
-            .range([0, width ]);
+function addD3Chart(data, color) {
+  var datearray = [];
+  var colorrange = [];
 
-        var y = d3.time.scale()
-            .range([height, 0]);
+      if (color == "blue") {
+        colorrange = ["#045A8D", "#2B8CBE", "#74A9CF", "#A6BDDB", "#D0D1E6", "#F1EEF6"];
+      }
 
-        var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom");
+      else if (color == "pink") {
+        colorrange = ["#980043", "#DD1C77", "#DF65B0", "#C994C7", "#D4B9DA", "#F1EEF6"];
+      }
 
-        var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("left");
+      else if (color == "orange") {
+        colorrange = ["#B30000", "#E34A33", "#FC8D59", "#FDBB84", "#FDD49E", "#FEF0D9"];
+      }
 
-        var areaR = d3.svg.area()
-            .x0(function(d) { return x(d.rightValue); })
-            .x1(width/2)
-            .y(function(d) { return y(d.date); });
+      var strokecolor = colorrange[0];
 
-        var areaL = d3.svg.area()
-            .x0(function(d) { return x(d.leftValue * -1); })
-            .x1(width/2)
-            .y(function(d) { return y(d.date); });    
+      var format = d3.time.format("%m/%d/%Y");
 
+      var margin = {top: 20, right: 40, bottom: 30, left: 30};
+      var width = document.body.clientWidth - margin.left - margin.right;
+      var height = 400 - margin.top - margin.bottom;
 
+      var tooltip = d3.select("body")
+          .append("div")
+          .attr("class", "remove")
+          .style("position", "absolute")
+          .style("z-index", "20")
+          .style("visibility", "hidden")
+          .style("top", "30px")
+          .style("left", "55px");
 
-        var svg = d3.select("#areaChartHolder").append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-          .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      var x = d3.time.scale()
+          .range([0, width]);
 
-        data.forEach(function(d) {
-          d.date = parseDate(d.date);
-          console.log(d)
-        });
+      var y = d3.scale.linear()
+          .range([height-10, 0]);
 
-        y.domain(d3.extent(data, function(d) { return d.date; }));
-        x.domain([-20, d3.max(data, function(d) { return d.close; })]);
+      var z = d3.scale.ordinal()
+          .range(colorrange);
 
-        svg.append("path")
-            .datum(data)
-            .attr("class", "area-right")
-            .attr("d", areaR);
+      var xAxis = d3.svg.axis()
+          .scale(x)
+          .orient("bottom")
+          .ticks(d3.time.weeks);
 
-        svg.append("path")
-            .datum(data)
-            .attr("class", "area-left")
-            .attr("d", areaL);    
+      var yAxis = d3.svg.axis()
+          .scale(y);
 
-        svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(" + margin.left + "," + width + ")")
-            .call(xAxis);
+      var yAxisr = d3.svg.axis()
+          .scale(y);
 
-        svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis)
-          .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text(" ");
+      var stack = d3.layout.stack()
+          .offset("silhouette")
+          .values(function(d) { return d.values; })
+          .x(function(d) { return d.date; })
+          .y(function(d) { return d.value; });
 
+      var nest = d3.nest()
+          .key(function(d) { return d.key; });
 
-          var focus = svg.append("g")
-              .attr("class", "focus");
+      var area = d3.svg.area()
+          .interpolate("cardinal")
+          .x(function(d) { return x(d.date); })
+          .y0(function(d) { return y(d.y0); })
+          .y1(function(d) { return y(d.y0 + d.y); });
 
-              focus.append("line")
-              .attr("x1", width)
-              .attr("x2", 0);
+      var svg = d3.select(".chart").append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-              focus.append("circle")
-              .attr("r", 5);
+       _.forEach(data, function (item,i){
+            item.date = format.parse(item.d3Date);
+            item.value = item.lrCount;
+        })    
 
-            svg.append("rect")
-              .attr("class", "svg-overlay")
-              .attr("id", "svgOverlay")
-              .attr("width", width)
-              .attr("height", height)
-              .on("mousemove", mousemove);
-              //.call(drag);
-              //
-var start = data[0].date; 
-var step = 1000 * 60 * 60 * 24 * 28; // 4 weeks
-
-        var offsets = data.map(function(t, i) { return [Date.UTC(t.date.getFullYear(), t.date.getMonth(), t.date.getDate()), t.lrCount, t]; });
-
-function mousemove() {  
-          stopPropagation()
-          var d = Math.round(y.invert(d3.mouse(this)[1]));
-          var obj = offsets[Math.round((d-start)/step)];
-
-          focus.select("line").attr("transform", "translate( 0 ,"+ d3.mouse(this)[1] +" )");
-          focus.select("circle").attr("transform", "translate( "+ x(obj[1])  +" , "+ d3.mouse(this)[1] +" )");
-          //focus.select(".x").attr("transform", "translate(" + x(d[0]) + ",0)");
-          //focus.select(".y").attr("transform", "translate(0," + y(d[1]) + ")");
-          svg.selectAll(".x.axis path").style("fill-opacity", Math.random()); // XXX Chrome redraw bug
-
-          upDateMapView(obj[2].compDate)
-          upDateTexts(obj[2])
-
-        }
-
-      function stopPropagation() {
-        d3.event.stopPropagation();
-      }  
-
+       graph(data)
       
+       function graph(data) {
+        
+            var layers = stack(nest.entries(data));
+                  console.log(data)
+                    x.domain(d3.extent(data, function(d) { return d.date; }));
+                    y.domain([0, d3.max(data, function(d) { return d.y0 + d.y; })]);
+
+                    svg.selectAll(".layer")
+                        .data(layers)
+                      .enter().append("path")
+                        .attr("class", "layer")
+                        .attr("d", function(d) { return area(d.values); })
+                        .style("fill", function(d, i) { return z(i); });
+
+
+                    svg.append("g")
+                        .attr("class", "x axis")
+                        .attr("transform", "translate(0," + height + ")")
+                        .call(xAxis);
+
+                    svg.append("g")
+                        .attr("class", "y axis")
+                        .attr("transform", "translate(" + width + ", 0)")
+                        .call(yAxis.orient("right"));
+
+                    svg.append("g")
+                        .attr("class", "y axis")
+                        .call(yAxis.orient("left"));
+
+                    svg.selectAll(".layer")
+                      .attr("opacity", 1)
+                      .on("mouseover", function(d, i) {
+                        svg.selectAll(".layer").transition()
+                        .duration(250)
+                        .attr("opacity", function(d, j) {
+                          return j != i ? 0.6 : 1;
+                      })})
+
+                      .on("mousemove", function(d, i) {
+                        mousex = d3.mouse(this);
+                        mousex = mousex[0];
+                        var invertedx = x.invert(mousex);
+                        invertedx = invertedx.getMonth() + invertedx.getDate();
+                        var selected = (d.values);
+                        for (var k = 0; k < selected.length; k++) {
+                          datearray[k] = selected[k].date
+                          datearray[k] = datearray[k].getMonth() + datearray[k].getDate();
+                        }
+
+                        mousedate = datearray.indexOf(invertedx);
+                        pro = d.values[mousedate].value;
+
+                        d3.select(this)
+                        .classed("hover", true)
+                        .attr("stroke", strokecolor)
+                        .attr("stroke-width", "0.5px"), 
+                        tooltip.html( "<p>" + d.key + "<br>" + pro + "</p>" ).style("visibility", "visible");
+                        
+                      })
+                      .on("mouseout", function(d, i) {
+                       svg.selectAll(".layer")
+                        .transition()
+                        .duration(250)
+                        .attr("opacity", "1");
+                        d3.select(this)
+                        .classed("hover", false)
+                        .attr("stroke-width", "0px"), tooltip.html( "<p>" + d.key + "<br>" + pro + "</p>" ).style("visibility", "hidden");
+                    })
+                      
+                    var vertical = d3.select(".area-chart-holder")
+                          .append("div")
+                          .attr("class", "remove")
+                          .style("position", "absolute")
+                          .style("z-index", "19")
+                          .style("width", "1px")
+                          .style("height", "380px")
+                          .style("top", "10px")
+                          .style("bottom", "30px")
+                          .style("left", "0px")
+                          .style("background", "#fff");
+
+                    d3.select(".area-chart-holder")
+                        .on("mousemove", function(){  
+                           mousex = d3.mouse(this);
+                           mousex = mousex[0] + 5;
+                           vertical.style("left", mousex + "px" )})
+                        .on("mouseover", function(){  
+                           mousex = d3.mouse(this);
+                           mousex = mousex[0] + 5;
+                           vertical.style("left", mousex + "px")});
+              };
+
 }
-
-

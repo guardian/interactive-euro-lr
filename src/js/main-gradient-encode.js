@@ -114,17 +114,15 @@ var getDatesRangeArray = function (startDate, endDate) {
 
 
 function getGraphData(range){
-    var format = d3.time.format("%m/%d/%Y");
+
     var tempGraphData = [];
 
         _.forEach(range, function(item, key){ // look for each month on the timeline
 
-           var checkDate =  moment(item).format("YYYYMMDD"); 
-            var d3Date =  moment(item).format("D-MMM-Y");
+            var checkDate =  moment(item).format("YYYYMMDD"); 
             var newObj={};
             var tempArr = [];
             newObj.compDate = checkDate; // adding a legible date 
-            newObj.date = d3Date;
 
                     _.forEach(electionDataByCountry, function(CountryElections){
                         
@@ -148,19 +146,14 @@ function getGraphData(range){
     
     _.forEach(tempGraphData, function(item){
         var lrVal = 0;
-        var leftValue = 0;
-        var rightValue = 0;
 
             _.forEach(item.lrArr, function(o){
 
-                    if (o.lr == "L"){ lrVal=lrVal-1; leftValue++ }
-                    if (o.lr == "R"){ lrVal=lrVal+1; rightValue++  }
+                    if (o.lr == "L"){ lrVal=lrVal-1 }
+                    if (o.lr == "R"){ lrVal=lrVal+1 }
             })
 
-        item.leftValue = leftValue;  
-        item.rightValue = rightValue; 
-        item.close = rightValue;
-        item.lrCount = lrVal;   
+        item.lrCount = lrVal;    
         
 
     })
@@ -305,80 +298,131 @@ function manualDateFormat(s){
 }
 
 function addD3AreaChart(data){
-        var margin = {top: 0, right: 5, bottom: 12, left: 5},
-          width = 240 - margin.left - margin.right,
-          height = 360 - margin.top - margin.bottom;
 
-        var parseDate = d3.time.format("%d-%b-%Y").parse;
+        var targetDiv = document.getElementById('areaChartHolder');
+            targetDiv.innerHTML = " ";
+   
+        var margin = {top: 0, right: 20, bottom: 0, left: 50},
+            width = 240 - margin.left - margin.right,
+            height = 360 - margin.top - margin.bottom;
 
-        var x = d3.scale.linear()
-            .range([0, width ]);
+        var parseDate = d3.time.format("%Y%m%d").parse;
 
         var y = d3.time.scale()
-            .range([height, 0]);
+            .range([0, height]);
+
+        var x = d3.scale.linear()
+            .range([width, 0]);
 
         var xAxis = d3.svg.axis()
             .scale(x)
-            .orient("bottom");
+            .orient("bottom")
+            .tickSize(-height)
+            .tickPadding(6);
 
         var yAxis = d3.svg.axis()
             .scale(y)
-            .orient("left");
+            .orient("left")
+            .tickSize(-width)
+            .tickPadding(6);
 
-        var areaR = d3.svg.area()
-            .x0(function(d) { return x(d.rightValue); })
-            .x1(width/2)
+        var line = d3.svg.line()
+            .interpolate("basis")
+            .x(function(d) { return x(d.temperature); })
             .y(function(d) { return y(d.date); });
 
-        var areaL = d3.svg.area()
-            .x0(function(d) { return x(d.leftValue * -1); })
-            .x1(width/2)
-            .y(function(d) { return y(d.date); });    
-
-
-
-        var svg = d3.select("#areaChartHolder").append("svg")
+        var svg = d3.select(targetDiv).append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
           .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+        
+         data.forEach(function(d) {
+            d.date = parseDate(d.compDate);
+            d.msec = d.date.getTime()
+            d.temperature = + d.lrCount;
+          });
 
-        data.forEach(function(d) {
-          d.date = parseDate(d.date);
-          console.log(d)
-        });
+        var start = data[0].date; 
+        var step = 1000 * 60 * 60 * 24 * 28; // 4 weeks
 
-        y.domain(d3.extent(data, function(d) { return d.date; }));
-        x.domain([-20, d3.max(data, function(d) { return d.close; })]);
+        var startMsec = start.getTime();
+        var CurrentDate = new Date(1958, 0, 1);
+        var tempDate;
+        var stepMsec;
+        var tempMsec;
 
-        svg.append("path")
-            .datum(data)
-            .attr("class", "area-right")
-            .attr("d", areaR);
+        
 
-        svg.append("path")
-            .datum(data)
-            .attr("class", "area-left")
-            .attr("d", areaL);    
+        var offsets = data.map(function(t, i) { return [Date.UTC(t.date.getFullYear(), t.date.getMonth(), t.date.getDate()), t.temperature, t]; });
 
-        svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(" + margin.left + "," + width + ")")
-            .call(xAxis);
+          x.domain([d3.max(data, function(d) { return d.temperature; }), -16]);
+          y.domain([data[data.length - 1].msec, data[0].msec]);
 
-        svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis)
-          .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text(" ");
+          svg.append("linearGradient")
+              .attr("id", "temperature-gradient")
+              .attr("gradientUnits", "userSpaceOnUse")
+              .attr("x1", 0).attr("y1", y(0))
+              .attr("x2", 100).attr("y2", y(0))
 
+            .selectAll("stop")
+              .data([
+                {offset: "0%", color: "#480000"},
+                // {offset: "10%", color: "#968000"},
+                // {offset: "20%", color: "#9c0000"},    
+                // {offset: "30%", color: "#d61d00"},    
+                {offset: "40%", color: "#ff5b32"},  
+                {offset: "50%", color: "#efefef"},
+                {offset: "60%", color: "#4982b9"},    
+                // {offset: "70%", color: "#005689"},    
+                // {offset: "80%", color: "#194377"},
+                // {offset: "90%", color: "#002e5b"},
+                {offset: "100%", color: "#000232"}  
+              ])
 
-          var focus = svg.append("g")
+            .enter().append("stop")
+              .attr("offset", function(d) { console.log(d.offset); return d.offset; })
+              .attr("stop-color", function(d) { console.log(d); return d.color; });
+
+          svg.append("g")
+              .attr("class", "x axis")
+              .attr("transform", "translate(0," + height + ")")
+              .call(xAxis);
+
+          svg.append("g")
+              .attr("class", "y axis")
+              .call(yAxis)
+            .append("text")
+              .attr("transform", "rotate(-90)")
+              .attr("y", 6)
+              .attr("dy", ".71em")
+              .style("text-anchor", "end")
+              .text("Date");
+
+          svg.append("path")
+              .datum(data)
+              .attr("class", "line")
+              .attr("d", line);
+
+          // var infobox = svg.append("g")
+          //     .attr("class", "infobox")
+          //     .attr("id", "infoBox");
+
+              // infobox.append("rect")
+              // .attr("width", width)
+              // .attr("x",-10)
+              // .attr("height", 20);
+            // infobox.append("text")
+            //       .attr("x", -6)
+            //       .attr("y", -9);
+
+            var focus = svg.append("g")
               .attr("class", "focus");
+
+              // focus.append("rect")
+              // .attr("width", width)
+              // .attr("x",-10)
+              // .attr("height", 20);
 
               focus.append("line")
               .attr("x1", width)
@@ -395,10 +439,7 @@ function addD3AreaChart(data){
               .on("mousemove", mousemove);
               //.call(drag);
               //
-var start = data[0].date; 
-var step = 1000 * 60 * 60 * 24 * 28; // 4 weeks
 
-        var offsets = data.map(function(t, i) { return [Date.UTC(t.date.getFullYear(), t.date.getMonth(), t.date.getDate()), t.lrCount, t]; });
 
 function mousemove() {  
           stopPropagation()
@@ -418,7 +459,7 @@ function mousemove() {
 
       function stopPropagation() {
         d3.event.stopPropagation();
-      }  
+      }
 
       
 }
