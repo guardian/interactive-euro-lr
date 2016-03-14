@@ -4,8 +4,6 @@ $c-accent: #194377;
 $c-text: #FFF;
 $c-neutral-one: #FFF;
 
-$c-left: #d61d00;
-$c-right: #005689;
 $c-coalition:#009900;
 $c-totalitarian:#999;
 
@@ -88,6 +86,11 @@ button {
 .svg-overlay {
   fill: none;
   pointer-events: all;
+}
+
+.svg-bg {
+  fill: #EFEFEF;
+  pointer-events: all
 }
 
 text {

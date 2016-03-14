@@ -18,6 +18,11 @@ $guardian-brand: map-get($pasteup-palette, 'guardian-brand');
 $guardian-brand-light: map-get($pasteup-palette, 'guardian-brand-light');
 $guardian-brand-dark: map-get($pasteup-palette, 'guardian-brand-dark');
 
+$c-left: #aaa;
+$c-right: #222;
+$c-coalition:#009900;
+$c-totalitarian:#999;
+
 
 @import "fonts";
 @import "palette";
@@ -26,8 +31,6 @@ $guardian-brand-dark: map-get($pasteup-palette, 'guardian-brand-dark');
 
 
 @import "general";
-
-
 
 
 @import "share";

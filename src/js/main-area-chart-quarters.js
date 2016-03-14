@@ -98,7 +98,7 @@ var getDatesRangeArray = function (startDate, endDate) {
     
     //console.log(startDate, endDate)   (moment(endDate).format("MM-DD-YYYY"))
 
-    var itr = moment.twix(startDate, endDate).iterate(91, 'days');
+    var itr = moment.twix(startDate, endDate).iterate(13, 'weeks');
     var range=[];
     
     while(itr.hasNext()){
@@ -107,22 +107,10 @@ var getDatesRangeArray = function (startDate, endDate) {
 
     var graphDTemp = getGraphData(range);
 
-    console.log(graphDTemp)
-
     addD3AreaChart(graphDTemp)
 
 }
 
-
-function getMemberStatus(election){
-
-
-      _.forEach(euJoinData, function(item){
-          
-          if (item.Country == election.Country && election.compDate > item.compDate){ console.log("work here"); return "true" } else { return "false" }
-
-      })
-}
 
 
 function getGraphData(range){
@@ -142,15 +130,16 @@ function getGraphData(range){
                         
                          var tempObj = {};
                         
-                            _.forEach(CountryElections, function(election){                                                              
-                                if (checkDate > election.compDate){  tempObj.lr = election.leftorright; tempObj.Country=election.Country; tempObj.euMember=getMemberStatus(election) }
+                            _.forEach(CountryElections, function(election){
+                                // continue here
+                                
+                                if (checkDate > election.compDate){  tempObj.lr = election.leftorright; tempObj.Country=election.Country }
                             })
 
                         tempArr.push(tempObj)  
 
                     });
-            newObj.lrArr = tempArr;
-
+            newObj.lrArr = tempArr;        
             tempGraphData.push(newObj)        
                 // set the last date vars and push to outputArr    
                 //tempGraphData.push(newObj)
@@ -204,7 +193,7 @@ function addD3Map(){
 
     var svg = d3.select("#mapHolder").append("svg")
         .attr("width", width - margin.left)
-        .attr("height", height);    
+        .attr("height", height);
 
     svg.selectAll(".subunit")
         .data(topojson.feature(euroMap, euroMap.objects.subunits).features)
@@ -239,6 +228,8 @@ function addD3Slider(minDate,maxDate){
 }
 
 function upDateMapView(n){
+
+//console.log(n)
     _.forEach(electionDataByCountry, function(item, key) {
         _.forEach(item, function(obj){
                 if(obj.compDate < n){
@@ -265,6 +256,7 @@ function upDateCountries(){
  }
 
  function upDateTexts(d){
+    console.log(d);
 
     var dateHolder = document.getElementById("dateHolder");
 
@@ -314,13 +306,10 @@ function manualDateFormat(s){
 
 function addD3AreaChart(data){
 
-        var barSize = 3;
-        var barPad = 1;
-        var barHeight = barPad+barSize;        
-
-        var margin = {top: 0, right: 10, bottom: 36, left: 24},
-          width = 180 ,//- margin.left - margin.right
-          height = data.length  * barHeight;
+    console.log(data)
+        var margin = {top: 0, right: 5, bottom: 12, left: 5},
+          width = 240 ,//- margin.left - margin.right
+          height = 360 - margin.top - margin.bottom;
 
         var parseDate = d3.time.format("%d-%b-%Y").parse;
 
@@ -336,80 +325,63 @@ function addD3AreaChart(data){
 
         var yAxis = d3.svg.axis()
             .scale(y)
-            .orient("left")
-            .tickSize(-(height-margin.top-margin.bottom-100), 0, 0); 
+            .orient("left");
+
+        var areaR = d3.svg.area()
+            .x0(function(d) { return x(d.rightValue); })
+            .x1(width/2)
+            .y(function(d) { return y(d.date); });
+
+        var areaL = d3.svg.area()
+            .x0(function(d) { return x(d.leftValue * -1); })
+            .x1(width/2)
+            .y(function(d) { return y(d.date); });    
+
+
 
         var svg = d3.select("#areaChartHolder").append("svg")
             .attr("width", width + margin.left + margin.right)
-            .attr("height", height)
+            .attr("height", height + margin.top + margin.bottom)
           .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         data.forEach(function(d) {
           d.date = parseDate(d.date);
-
+          console.log(d)
         });
 
         y.domain(d3.extent(data, function(d) { return d.date; }));
         x.domain([-20, d3.max(data, function(d) { return d.close; })]);
 
+        svg.append("path")
+            .datum(data)
+            .attr("class", "area-right")
+            .attr("d", areaR);
+
+        svg.append("path")
+            .datum(data)
+            .attr("class", "area-left")
+            .attr("d", areaL);    
+
         svg.append("g")
             .attr("class", "x axis")
-            .attr("transform", "translate( 0 ," + height + ")")
+            .attr("transform", "translate(" + margin.left + "," + width + ")")
             .call(xAxis);
 
         svg.append("g")
             .attr("class", "y axis")
-            .call(yAxis);
+            .call(yAxis)
+          .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text(" ");
 
-      var unitWidth = width/42;
-        svg.append("rect")
-              .attr("class", "svg-bg")
-              .attr("width", width)
-              .attr("height", height)
-
-           
-              
-      var bar = svg.selectAll("g")
-            .data(data)
-          .enter().append("g")
-          .attr("transform", function(d,k) { console.log(k); return "translate( 0 ,"+ (height - (k * barHeight)) +")"; });
-            
-        bar.append("rect")
-              .data(data)
-              .attr("class","area-left")
-              .attr("width", function(d){ return unitWidth * d.leftValue })
-              .attr("height", barSize)
-              .attr("transform", function(d){ return "translate("+((width/2)-(unitWidth * d.leftValue))+",0)" } );
-
-        bar.append("rect")
-              .data(data)
-              .attr("class","area-right")
-              .attr("width", function(d){ return unitWidth * d.rightValue })
-              .attr("height", barSize)
-              .attr("transform", function(d){ return "translate("+(width/2)+",0)" } );       
-
-        // var barR = svg.selectAll("g")
-        //     .data(data)
-        //   .enter().append("g")
-        //     .attr("transform", function(d, key) { return "translate("+ (width/2) +","+ (key * barHeight) +")"; });
-
-        // bar.append("rect")
-        //       .data(data)
-        //       .attr("class","area-right")
-        //       .attr("width", function(d){ return unitWidth * d.rightValue })
-        //       .attr("height", barSize);  
-
-        // .append("text")
-        //   .attr("transform", "rotate(-90)")
-        //   .attr("y", "200")
-        //   .attr("dy", "240")
-        //   .style("text-anchor", "end")
-        //   .text(" ");
 
           var focus = svg.append("g")
               .attr("class", "focus");
-              
+
               focus.append("line")
               .attr("x1", width)
               .attr("x2", 0);
@@ -423,15 +395,12 @@ function addD3AreaChart(data){
               .attr("width", width)
               .attr("height", height)
               .on("mousemove", mousemove);
-
-              console.log(d3.select('.svg-overlay'))
               //.call(drag);
               //
 var start = data[0].date; 
-var step = 1000 * 60 * 60 * 24 * 91; // millsec*second*min*hour*days required (91 days - approx a quarter of year)
-var offsets = data.map(function(t, i) { return [Date.UTC(t.date.getFullYear(), t.date.getMonth(), t.date.getDate()), t.lrCount, t]; });
+var step = 1000 * 60 * 60 * 24 * 91; // 4 weeks
 
-console.log(offsets.length)
+        var offsets = data.map(function(t, i) { return [Date.UTC(t.date.getFullYear(), t.date.getMonth(), t.date.getDate()), t.lrCount, t]; });
 
 function mousemove() {  
           stopPropagation()
@@ -450,7 +419,7 @@ function mousemove() {
         }
 
       function stopPropagation() {
-          d3.event.stopPropagation();
+        d3.event.stopPropagation();
       }  
 
       
