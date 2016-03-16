@@ -33,8 +33,8 @@ $c-totalitarian:#999;
 }
 
 .y.axis line {
-  stroke: #ccc;
-  stroke-dasharray: 2,3;
+  stroke: #AAA;
+  stroke-dasharray: 1,2;
 }
 
 button {
@@ -55,8 +55,8 @@ button {
     }
     
 .focus circle {
-  fill:  $c-accent;
-  stroke: $c-accent;
+  fill:  #FFF;
+  stroke: #EFEFEF;
 }
 
 .focus line {
@@ -68,18 +68,20 @@ button {
     
 }
 
-.infobox rect{
+.focus rect{
     fill: #FFF;
+    stroke:#EFEFEF;
+    stroke-width: 1px;
     opacity: 0.9;
 }
 
-.infobox line{
-    stroke: $c-accent;
+.focus line{
+    stroke: #EFEFEF;
     stroke-width: 1px;
 }
 
-.infobox text {
-  @include fs-textSans(4);
+.focus text {
+  @include fs-data(1);
     color:$neutral-2;
 }
 
@@ -93,7 +95,54 @@ button {
   pointer-events: all
 }
 
+.date-div{
+  position:relative;
+  background-color:#FFF;
+
+}
+.bolder{
+   font-family:"Guardian Egyptian Web", Georgia; 
+   font-size: 18px;
+   color: #767676;
+}
+            
+
 text {
-    font: 10px sans-serif;
+    @include fs-data(1);
+    color:$c-neutral-mid;
+    text-anchor: start;
+   
+}
+
+.key-graphs {
+    // position: absolute;
+    // top: 12px;
+    // left: 0;
+}
+
+.a-key{
+    display:inline;
+    font-size: 12px;
+    line-height: 16px;
+    font-family: "Guardian Text Sans Web", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    color: #767676;
+}
+
+.a-key .a-key__colour{
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 12px; 
+    margin: 0 3px 1px 0;  
+}
+
+.a-key:nth-of-type(2) {
+    margin: 0 3px 1px 9px;
+}
+
+
+.explainer{
+  line-height:15px;
+  
 }
 

@@ -18,10 +18,18 @@ $guardian-brand: map-get($pasteup-palette, 'guardian-brand');
 $guardian-brand-light: map-get($pasteup-palette, 'guardian-brand-light');
 $guardian-brand-dark: map-get($pasteup-palette, 'guardian-brand-dark');
 
-$c-left: #aaa;
-$c-right: #222;
-$c-coalition:#009900;
-$c-totalitarian:#999;
+$c-left: #dcdcdc;
+$c-right: #bdbdbd;
+$c-coalition:#767676;
+$c-totalitarian:#767676;
+
+$c-background: #CCC;
+$c-accent: rgb(75, 198, 223); //rgb(255, 155, 11)
+$c-text: #FFF;
+$c-neutral-one: #f6f6f6;
+$c-neutral-light: #f6f6f6;
+$c-neutral-mid: #767676;
+$c-neutral-black: #333;
 
 
 @import "fonts";

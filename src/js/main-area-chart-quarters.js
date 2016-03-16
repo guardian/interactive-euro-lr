@@ -307,7 +307,7 @@ function manualDateFormat(s){
 function addD3AreaChart(data){
 
     console.log(data)
-        var margin = {top: 0, right: 5, bottom: 12, left: 5},
+        var margin = {top: 0, right: 5, bottom: 12, left: 24},
           width = 240 ,//- margin.left - margin.right
           height = 360 - margin.top - margin.bottom;
 
