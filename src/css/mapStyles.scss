@@ -2,21 +2,21 @@
 
 
 .europe {
-    fill: $c-neutral-light;//
+    fill: $neutral-4;//
 }
 
 .none-europe {
-    fill: $c-neutral-light;
+    fill: $neutral-2;
 }
 
 .left-wing {
-    fill:  desaturate($c-left, 30%);
-    background-color: desaturate($c-left, 30%);
+    fill: $c-left;
+    background-color: $c-left;
 }
 
 .right-wing {
-    fill: desaturate($c-right, 5%);
-    background-color: desaturate($c-right, 5%);
+    fill: $c-right;
+    background-color: $c-right;
 }
 
 .totalitarian {
@@ -27,6 +27,6 @@
 	fill:$c-coalition;
 }
 
-#shp_Tunisia, #shp_Algeria, #shp_Morocco, #shp_Turkey, #shp_Syria, #shp_Iraq{
+#shp_Tunisia, #shp_Algeria, #shp_Morocco, #shp_Turkey, #shp_Syria, #shp_Iraq, #shp_Iraqi-Kurdistan{
 	display:none;
 }

@@ -8,13 +8,12 @@ $c-coalition:#009900;
 $c-totalitarian:#999;
 
 
-
 .area-left {
-    fill:  desaturate($c-left, 30%);
+    fill: $c-left;
 }
 
 .area-right {
-    fill: lighten($c-right, 2%);
+    fill: $c-right;
 }
 
 .axis path,
@@ -105,7 +104,7 @@ button {
 .bolder{
    font-family:"Guardian Egyptian Web", Georgia; 
    font-size: 22px;
-   color: #767676;
+   color: #222;
 }
             
 
@@ -150,8 +149,11 @@ text {
 
 .area-chart-holder{
     width: 180px;
+    padding: 12px 20px 24px;
+    margin-right:40px;
     float: right;
-    background-color: lighten(white, 20%);
-    padding: 12px 20px;
+    background-color: rgba(255,255,255,0.95);
+    
+    border-radius: 0 0 3px 3px;
 }
 

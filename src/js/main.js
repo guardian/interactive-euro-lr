@@ -200,13 +200,13 @@ function addD3Map(){
 
     var padding = {top:0, right:0, bottom:0, left:0 } // left:220
     
-    var width = 960, //320
+    var width = 940, //320
         height = 640; //320
 
     //var center = d3.geo.centroid(json);    
 
     var projection = d3.geo.mercator()
-        .center([19, 53]) //20, 50
+        .center([20, 53]) //20, 50
         .rotate([4.4, 0]) //4.4, 0
         .scale(980 * 1) //650 * 0.7
 
