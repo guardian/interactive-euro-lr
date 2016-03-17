@@ -63,12 +63,21 @@ function modelData(resp){
      }) 
 
     electionDataByCountry = _.groupBy(electionData, function(item) { return item.Country});
+
+    euJoinData.sort(function(a, b) {
+        return parseFloat(a.compDate) - parseFloat(b.compDate);
+    });
+
     buildView();
+
+
 }
 
 
 function buildView(){
-        addD3Map(); 
+        var initObj = { compDate:"19580101"} //hacked in a start date to update text
+        addD3Map();
+        upDateTexts(initObj) 
     
 }
 
@@ -91,6 +100,8 @@ function setTimeLineData(){
    // addD3Slider(startDate, endDate);
     getDatesRangeArray(startDate, endDate);
 
+    upDateTexts(euJoinData[0])
+
 }
 
 
@@ -107,7 +118,7 @@ var getDatesRangeArray = function (startDate, endDate) {
 
     var graphDTemp = getGraphData(range);
 
-    addD3AreaChart(graphDTemp)
+    addD3AreaChart(graphDTemp);
 
 }
 
@@ -183,24 +194,21 @@ function getGraphData(range){
 }
 
 
-
-
-
 function addD3Map(){
     var emptyDiv = document.getElementById('mapHolder');
     emptyDiv.innerHTML = " ";
 
     var padding = {top:0, right:0, bottom:0, left:0 } // left:220
     
-    var width = 320, //960
-        height = 320; //640
+    var width = 960, //320
+        height = 640; //320
 
     //var center = d3.geo.centroid(json);    
 
     var projection = d3.geo.mercator()
-        .center([12, 50]) //20, 50
+        .center([19, 53]) //20, 50
         .rotate([4.4, 0]) //4.4, 0
-        .scale(650 * 0.7) //1200 * 0.7
+        .scale(980 * 1) //650 * 0.7
 
         .translate([width / 2, height / 2]);
 
@@ -334,7 +342,7 @@ function addD3AreaChart(data){
 
     console.log(data)
            var width = 180 ,//- margin.left - margin.right
-          height = 450 - margin.top - margin.bottom;
+            height = 420 - margin.top - margin.bottom;
 
         var parseDate = d3.time.format("%d-%b-%Y").parse;
 
@@ -361,7 +369,8 @@ function addD3AreaChart(data){
         var areaL = d3.svg.area()
             .x0(function(d) { return x(d.leftValue * -1); })
             .x1((width/2)-margin.left)
-            .y(function(d) { return y(d.date); });  
+            .y(function(d) { return y(d.date); }); 
+           
 
         var dateDivHolder = d3.select("#areaChartHolder").append("div")            
             .attr("class","date-div")
@@ -398,10 +407,11 @@ function addD3AreaChart(data){
             .attr("class", "area-left")
             .attr("d", areaL);    
 
-        // svg.append("g")
-        //     .attr("class", "x axis")
-        //     .attr("transform", "translate( 0 ," + height + ")")
-        //     .call(xAxis);
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate( 0 ," + height + ")")
+            .call(xAxis);
+
         svg.append("line")
               .attr("x1", width - margin.right)
               .attr("stroke","#333")
@@ -420,7 +430,6 @@ function addD3AreaChart(data){
             .attr("y", -6)
             .attr("x", -18)
             .style("text-anchor", "start");
-
        
       // .append("text")
       //   .attr("transform", "rotate(-90)")
@@ -434,25 +443,27 @@ function addD3AreaChart(data){
               .attr("class", "focus");
               
           focus.append("line")
-              .attr("x1", width + margin.right)
-              .attr("x2", (width-margin.left-margin.right)/2);
+              .attr("x1", width-margin.left-margin.right)
+              .attr("x2", 0);//(width-margin.left-margin.right)/2
 
-          focus.append("rect")
-              .attr("class", "svg-underlay")
-              .attr("width", 60)
-              .attr("height", 18)
-              .attr("x", width-45)
-              .attr("y",8)
+          // focus.append("rect")
+          //     .attr("class", "svg-underlay")
+          //     .attr("width", 60)
+          //     .attr("height", 18)
+          //     .attr("x", width-45)
+          //     .attr("y",8)
 
-          focus.append("text")
-              .attr("dx", width-margin.left-margin.right)
-              .attr("dy", 0);
+          // focus.append("text")
+          //     .attr("dx", width-margin.left-margin.right)
+          //     .attr("dy", 0);
 
           focus.append("circle")
               .attr("r", 3)
               .attr("transform", "translate( "+ (width-margin.left-margin.right)/2 +" , 0 )");
 
-            svg.append("rect")
+          //svg.append("text").attr("transform", "translate( 90 , 120)").text(function() { return "Left" });  
+
+          svg.append("rect")
               .attr("class", "svg-overlay")
               .attr("id", "svgOverlay")
               .attr("width", width)
@@ -473,8 +484,8 @@ function mousemove() {
 
           focus.select("g").attr("transform", "translate( 0 ,"+ d3.mouse(this)[1] +" )");
           focus.select("circle").attr("transform", "translate( "+ (width-margin.left-margin.right)/2 +" , "+ d3.mouse(this)[1] +" )");
-          focus.select("text").attr("transform", "translate( 0 , "+ (d3.mouse(this)[1] )+" )").text(function() { return moment(obj[2].compDate).format('MMM YYYY') });  
-          focus.select("rect").attr("transform", "translate( 0 , "+ (d3.mouse(this)[1] - 20 )+" )");
+          //focus.select("text").attr("transform", "translate( 0 , "+ (d3.mouse(this)[1] )+" )").text(function() { return moment(obj[2].compDate).format('MMM YYYY') });  
+          //focus.select("rect").attr("transform", "translate( 0 , "+ (d3.mouse(this)[1] - 20 )+" )");
           focus.select("line").attr("transform", "translate( 0 , "+ (d3.mouse(this)[1])+" )");
           //focus.select(".x").attr("transform", "translate(" + x(d[0]) + ",0)");
           //focus.select(".y").attr("transform", "translate(0," + y(d[1]) + ")");

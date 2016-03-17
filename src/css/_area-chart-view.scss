@@ -10,7 +10,7 @@ $c-totalitarian:#999;
 
 
 .area-left {
-    fill: lighten($c-left, 2%);
+    fill:  desaturate($c-left, 30%);
 }
 
 .area-right {
@@ -22,6 +22,9 @@ $c-totalitarian:#999;
   fill: none;
   stroke: $c-neutral-one;
   shape-rendering: crispEdges;
+}
+.axis text{
+  fill: lighten($c-neutral-mid, 20%);
 }
 
 .x.axis path {
@@ -97,19 +100,18 @@ button {
 
 .date-div{
   position:relative;
-  background-color:#FFF;
 
 }
 .bolder{
    font-family:"Guardian Egyptian Web", Georgia; 
-   font-size: 18px;
+   font-size: 22px;
    color: #767676;
 }
             
 
 text {
     @include fs-data(1);
-    color:$c-neutral-mid;
+    color: lighten($c-neutral-mid, 20%);
     text-anchor: start;
    
 }
@@ -125,7 +127,7 @@ text {
     font-size: 12px;
     line-height: 16px;
     font-family: "Guardian Text Sans Web", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-    color: #767676;
+    color: lighten($c-neutral-mid, 20%);
 }
 
 .a-key .a-key__colour{
@@ -142,7 +144,14 @@ text {
 
 
 .explainer{
-  line-height:15px;
+  line-height:15px !important;
   
+}
+
+.area-chart-holder{
+    width: 180px;
+    float: right;
+    background-color: lighten(white, 20%);
+    padding: 12px 20px;
 }
 
