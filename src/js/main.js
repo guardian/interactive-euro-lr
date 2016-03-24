@@ -12,12 +12,14 @@ import twix from 'twix'
 import 'moment/locale/en-gb';
 
 import share from './lib/share'
+import Tooltip from './Tooltip'
 //import addD3AreaChart from './lib/addD3AreaChart'
 moment.locale('en-gb') //console.log(moment.locale())
 
 var _ = lodash;
 var shareFn = share('Interactive title', 'http://gu.com/p/URL', '#Interactive');
-var electionData, electionDataByCountry, euCountries, euJoinData, startDate, endDate;
+
+var electionData, electionDataByCountry, euCountries, euJoinData, startDate, endDate, selectedDate;
 var margin = {top: 90, right: 20, bottom: 36, left: 20}
 
 export function init(el, context, config, mediator) {
@@ -39,6 +41,8 @@ export function init(el, context, config, mediator) {
 }
 
 function modelData(resp){
+
+
     electionData = resp.sheets["ElectionsByCountry]"];  // data entered with "]" at end of value
     euJoinData = resp.sheets.DateJoinedEU;
     euCountries = []
@@ -83,12 +87,11 @@ function buildView(){
 
 
 function setTimeLineData(){
+    selectedDate = "19580101";
     startDate = euJoinData[0]["compDate"];
     endDate  = electionData[0]["compDate"];
         _.forEach(euJoinData, function(item, i) {
             if (startDate > item.compDate){ startDate = item.compDate;};
-            
-
         }); 
         _.forEach(electionData, function(item, i) {
 
@@ -99,7 +102,6 @@ function setTimeLineData(){
 
    // addD3Slider(startDate, endDate);
     getDatesRangeArray(startDate, endDate);
-
     upDateTexts(euJoinData[0])
 
 }
@@ -188,7 +190,7 @@ function getGraphData(range){
         
 
     })
-    console.log(tempGraphData)
+    //console.log(tempGraphData)
     return tempGraphData;
 
 }
@@ -224,12 +226,79 @@ function addD3Map(){
 
     .enter().append("path")
         .attr("class", function(d) { var elClass = "none-europe "; if (d.properties.continent == "Europe"){ elClass = "europe" }; return elClass; }) // + d.id
-        .attr("id", function(d){  return "shp_"+ formatStr(d.properties.name) }) //console.log(d);
+        .attr("id", function(d){ return "shp_"+ formatStr(d.properties.name) }) //console.log(d);
         .attr("d", path);
+
+     svg.selectAll(".europe")
+         .on( "mousemove",function(){
+              var x=d3.mouse(this)[0];
+              x = Math.min(width-margin.right,x);
+
+              var y=d3.mouse(this)[1];
+              y = Math.min(height-margin.top,y);
+
+              var countryD = findCountry(this)
+
+              console.log(countryD)
+
+              var tooltipPartnership=new Tooltip({ container: '#mapHolder', positioner: this.id, margins:margin, dataObj:countryD, title: true, indicators:[
+                {
+                  id:"partnershipRuns",
+                  title:"Runs"
+                },
+                {
+                  id:"partnershipBalls",
+                  title:"Balls"
+                }
+              ] })
+
+              //tooltipPartnership.show();
+
+      
+              // if(country) {
+        
+              //     self.highlightPartnership(partnership);
+              //     self.highlightProfile(partnership);
+        
+              //     //tooltip.show(series,xscale(series.date),0,status);//yscale.range()[0]);
+              //     //highlightSeries(series.date);
+              // }
+            })
+            .on("mouseleave",function(d){
+              // self.highlightPartnership();
+              // self.highlightProfile();
+              //tooltip.hide();
+              //tooltipPartnership.hide();
+            })   
 
 
         setTimeLineData();
 }
+
+
+function findCountry(d){
+
+    var idArr = d.id.split("_");
+    var tempArr = [];
+    var tempObj;
+    _.forEach(electionDataByCountry, function(elections){
+      if(idArr[1]==elections[0]["Country"]){
+          tempArr = elections
+      }
+     
+    })
+
+    _.forEach(tempArr, function(obj){
+        if(obj.compDate < selectedDate){
+          tempObj = obj;
+        }
+    })
+
+    return tempObj
+    
+}
+
+
 
 function addD3Slider(minDate,maxDate){
     var sliderDiv = document.getElementById('slider3');
@@ -253,7 +322,6 @@ function addD3Slider(minDate,maxDate){
 
 function upDateMapView(n){
 
-console.log(n)
     _.forEach(electionDataByCountry, function(item, key) {
         _.forEach(item, function(obj){
                 if(obj.compDate < n){
@@ -261,6 +329,7 @@ console.log(n)
                 }
         })
     }) 
+    selectedDate = n;
 
     upDateCountries();
 

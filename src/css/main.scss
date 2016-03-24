@@ -44,4 +44,22 @@ $c-neutral-black: #333;
 @import "share";
 @import "mapStyles";
 @import "d3Slider";
+@import "tooltip";
 @import "area-chart-view";
+
+
+.clearfix:before,
+.clearfix:after {
+    content: ".";    
+    display: block;    
+    height: 0;    
+    overflow: hidden; 
+}
+.clearfix:after { clear: both; }
+.clearfix { zoom: 1; } /* IE < 8 */
+
+button:focus {outline:0 !important;}
+
+a {
+    text-shadow: none !important; // Override apps
+}
