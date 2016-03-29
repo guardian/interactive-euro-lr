@@ -1,6 +1,4 @@
 export default function Tooltip(options) {
-
-
   var w=options.width || 300,
     h=options.height || 180;
 
@@ -56,26 +54,32 @@ export default function Tooltip(options) {
     tooltipTitle.text(function(d) {return data.Country} )
 
     indicator.select("#govLeader")
+      .attr("class","value-emphasis")
       .text(function(d){
         //console.log("AAAHHHHHHHHHH",d,this)
-        return data.HeadofGovernment;
+        return (data.HeadofGovernment);
       })
 
     indicator.select("#govParty")
-      .text(function(d){
-        //console.log("AAAHHHHHHHHHH",d,this)
-        return data.partyOrCoalition;
-      })  
+      .text(function(d){ return data.partyOrCoalition;  })
+      
 
     tooltip.style({
       left:(x + 20)+"px",  //+16+options.margins.left
       top:(y + (h/2) + 30)+"px" //+options.margins.top-60
     })
     .classed("visible",true)
+
+ 
+
+      
     
   };
 
+
 }
+
+
 
 
 
