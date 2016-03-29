@@ -13,7 +13,7 @@ import 'moment/locale/en-gb';
 
 import share from './lib/share'
 import Tooltip from './Tooltip'
-//import addD3AreaChart from './lib/addD3AreaChart'
+//import addD3AreaChart from './addD3AreaChart' implement as new addD3AreaChart(graphDTemp, margin);
 moment.locale('en-gb') //console.log(moment.locale())
 
 var _ = lodash;
@@ -221,6 +221,19 @@ function addD3Map(){
         .attr("width", width - padding.left)
         .attr("height", height + margin.top);
 
+        //new Tooltip({ container: '#mapHolder', positioner: this.id, margins:margin, dataObj:countryD, title: true, indicators:[
+
+    var tooltipPartnership=new Tooltip({ container: '#mapHolder', margins:margin, title: true, indicators:[
+                {
+                  id:"govLeader",
+                  title:"Leader"
+                },
+                {
+                  id:"govParty",
+                  title:"Party"
+                }
+        ] })    
+
     svg.selectAll(".subunit")
         .data(topojson.feature(euroMap, euroMap.objects.subunits).features)
 
@@ -241,18 +254,7 @@ function addD3Map(){
 
               console.log(countryD)
 
-              var tooltipPartnership=new Tooltip({ container: '#mapHolder', positioner: this.id, margins:margin, dataObj:countryD, title: true, indicators:[
-                {
-                  id:"partnershipRuns",
-                  title:"Runs"
-                },
-                {
-                  id:"partnershipBalls",
-                  title:"Balls"
-                }
-              ] })
-
-              //tooltipPartnership.show();
+              tooltipPartnership.show(countryD,x,y,countryD.Country);
 
       
               // if(country) {
@@ -265,10 +267,11 @@ function addD3Map(){
               // }
             })
             .on("mouseleave",function(d){
+              
               // self.highlightPartnership();
               // self.highlightProfile();
               //tooltip.hide();
-              //tooltipPartnership.hide();
+              tooltipPartnership.hide();
             })   
 
 
@@ -277,6 +280,7 @@ function addD3Map(){
 
 
 function findCountry(d){
+
 
     var idArr = d.id.split("_");
     var tempArr = [];
@@ -409,9 +413,8 @@ function manualDateFormat(s){
 
 function addD3AreaChart(data){
 
-    console.log(data)
-           var width = 180 ,//- margin.left - margin.right
-            height = 420 - margin.top - margin.bottom;
+       var width = 180 ,//- margin.left - margin.right
+        height = 420 - margin.top - margin.bottom;
 
         var parseDate = d3.time.format("%d-%b-%Y").parse;
 

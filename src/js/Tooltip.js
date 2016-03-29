@@ -1,8 +1,8 @@
 export default function Tooltip(options) {
 
 
-  var w=options.width || 200,
-    h=options.height || 110;
+  var w=options.width || 300,
+    h=options.height || 180;
 
   var positioner = d3.select(options.positioner)  
 
@@ -15,12 +15,10 @@ export default function Tooltip(options) {
             .style("width",function(){
               return (options.width)+"px";
             })
-  var tooltipTitle;
-  if(options.title) {
-    tooltipTitle=tooltip.append("h1")
-      .attr("class","tooltip-title")
-      .text(options.dataObj.Country)  
-  }
+
+  var tooltipTitle=tooltip.append("h1")
+        .attr("id","titleTxt")
+        .attr("class","tooltip-title");   
   
 
   var indicator=tooltip.selectAll("div.indicator")
@@ -30,6 +28,8 @@ export default function Tooltip(options) {
       .enter()
       .append("div")
         .attr("class","indicator clearfix")
+
+
 
   var value=indicator.append("span")
         .attr("class","value")
@@ -43,26 +43,26 @@ export default function Tooltip(options) {
           return d.title;
         });
 
-  this.hide=function() {
-    tooltip.classed("visible",false);
-  };
-  this.show=function(data,x,y,title) {
-    //console.log(x,y)
-    //percentage.text(data.percentage+"%");
-    //projection_value.text(data.total)
-
-    // if(title) {
-    //   tooltipTitle.text(title); 
-    // }
+ 
     
 
-    indicator.data(data);
+  this.hide=function() {
+    tooltip.classed("visible", false);
+  };
+  this.show=function(data,x,y,title) {
+       tooltipTitle.text(function(d) {return data.Country} )
 
-    indicator.select("span.value")
+    indicator.select("#govLeader")
       .text(function(d){
         //console.log("AAAHHHHHHHHHH",d,this)
-        return d.value;
+        return data.HeadofGovernment;
       })
+
+    indicator.select("#govParty")
+      .text(function(d){
+        //console.log("AAAHHHHHHHHHH",d,this)
+        return data.partyOrCoalition;
+      })  
 
     tooltip.style({
       left:(x+16+options.margins.left)+"px",
@@ -71,8 +71,6 @@ export default function Tooltip(options) {
     .classed("visible",true)
     
   };
-
-  // console.log("!!!!!!!!!!!",tooltip)
 
 }
 
