@@ -31,26 +31,29 @@ export default function Tooltip(options) {
 
 
 
-  var value=indicator.append("span")
+  var value = indicator.append("span")
         .attr("class","value")
         .attr("id",function(d){
           return d.id;
         });
 
-  indicator.append("span")
-        .attr("class","title")
-        .text(function(d){
-          return d.title;
-        });
+        // indicator.append("span")
+        // .attr("class","title")
+        // .text(function(d){
 
- 
-    
+        //   return d.title;
+        // });
+
+  
+
 
   this.hide=function() {
     tooltip.classed("visible", false);
   };
+
   this.show=function(data,x,y,title) {
-       tooltipTitle.text(function(d) {return data.Country} )
+
+    tooltipTitle.text(function(d) {return data.Country} )
 
     indicator.select("#govLeader")
       .text(function(d){
@@ -65,8 +68,8 @@ export default function Tooltip(options) {
       })  
 
     tooltip.style({
-      left:(x+16+options.margins.left)+"px",
-      top:(y+options.margins.top-60)+"px"
+      left:(x + 20)+"px",  //+16+options.margins.left
+      top:(y + (h/2) + 30)+"px" //+options.margins.top-60
     })
     .classed("visible",true)
     

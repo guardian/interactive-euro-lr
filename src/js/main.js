@@ -5,7 +5,6 @@ import d3 from 'd3'
 
 import lodash from 'lodash'
 import topojson from 'topojson'
-import d3Slider from './lib/d3Slider'
 import euroMap from './mapData/subunits.json!json'
 import moment from 'moment'
 import twix from 'twix'
@@ -13,7 +12,7 @@ import 'moment/locale/en-gb';
 
 import share from './lib/share'
 import Tooltip from './Tooltip'
-//import addD3AreaChart from './addD3AreaChart' implement as new addD3AreaChart(graphDTemp, margin);
+import addD3AreaChart from './addD3AreaChart' //implement as…  new addD3AreaChart(graphDTemp, margin);
 moment.locale('en-gb') //console.log(moment.locale())
 
 var _ = lodash;
@@ -79,19 +78,20 @@ function modelData(resp){
 
 
 function buildView(){
-        var initObj = { compDate:"19580101"} //hacked in a start date to update text
+        var initObj = { compDate:"19730101"} //hacked in a start date to update text
         addD3Map();
-        upDateTexts(initObj) 
+        upDateTexts(initObj)
+        
     
 }
 
 
 function setTimeLineData(){
-    selectedDate = "19580101";
-    startDate = euJoinData[0]["compDate"];
+    selectedDate = "19730101";
+    startDate = "19730101";
     endDate  = electionData[0]["compDate"];
         _.forEach(euJoinData, function(item, i) {
-            if (startDate > item.compDate){ startDate = item.compDate;};
+            //if (startDate > item.compDate){ startDate = item.compDate;};
         }); 
         _.forEach(electionData, function(item, i) {
 
@@ -100,7 +100,6 @@ function setTimeLineData(){
                 //console.log( item )//item.Country+"---------"+moment(item.DateFormat).format('MM-DD-YYYY') 
         });
 
-   // addD3Slider(startDate, endDate);
     getDatesRangeArray(startDate, endDate);
     upDateTexts(euJoinData[0])
 
@@ -108,9 +107,6 @@ function setTimeLineData(){
 
 
 var getDatesRangeArray = function (startDate, endDate) {
-    
-    //console.log(startDate, endDate)   (moment(endDate).format("MM-DD-YYYY"))
-
     var itr = moment.twix(startDate, endDate).iterate(13, 'weeks');
     var range=[];
     
@@ -120,7 +116,7 @@ var getDatesRangeArray = function (startDate, endDate) {
 
     var graphDTemp = getGraphData(range);
 
-    addD3AreaChart(graphDTemp);
+    new addD3AreaChart(graphDTemp, margin, electionDataByCountry, selectedDate, upDateCountries, upDateTexts, upDateMapView, stopPropagation);
 
 }
 
@@ -223,14 +219,16 @@ function addD3Map(){
 
         //new Tooltip({ container: '#mapHolder', positioner: this.id, margins:margin, dataObj:countryD, title: true, indicators:[
 
-    var tooltipPartnership=new Tooltip({ container: '#mapHolder', margins:margin, title: true, indicators:[
+    var tooltipPartnership=new Tooltip({ container: '#mapHolder', margins:margin, title: false, indicators:[
                 {
-                  id:"govLeader",
-                  title:"Leader"
+                  title:"Leader",
+                  id:"govLeader"
+                  
                 },
                 {
-                  id:"govParty",
-                  title:"Party"
+                  title:"Party",
+                  id:"govParty"
+                  
                 }
         ] })    
 
@@ -251,8 +249,6 @@ function addD3Map(){
               y = Math.min(height-margin.top,y);
 
               var countryD = findCountry(this)
-
-              console.log(countryD)
 
               tooltipPartnership.show(countryD,x,y,countryD.Country);
 
@@ -304,43 +300,8 @@ function findCountry(d){
 
 
 
-function addD3Slider(minDate,maxDate){
-    var sliderDiv = document.getElementById('slider3');
-    sliderDiv.innerHTML = " ";
-    // var minDateUnix = moment('2014-07-01', "YYYY MM DD").unix();
-    // var maxDateUnix = moment('2015-07-21', "YYYY MM DD").unix();
-    var timeValue = 91; //set to 13 weeks - closest possible constant to a quarter 
 
-        d3.select('#slider3').call(d3Slider()
-          .axis(true)
-            .min(minDate)
-            .max(maxDate)
-            .step(timeValue)
-
-          .on("slide", function(evt, value) {
-            upDateMapView(value)
-           //console.log(value)
-          })
-        );
-}
-
-function upDateMapView(n){
-
-    _.forEach(electionDataByCountry, function(item, key) {
-        _.forEach(item, function(obj){
-                if(obj.compDate < n){
-                    item.govNow = obj.leftorright;
-                }
-        })
-    }) 
-    selectedDate = n;
-
-    upDateCountries();
-
-}
-
-
-function upDateCountries(){
+var upDateCountries = function(){
     var countries = d3.select("svg").selectAll(".europe");
 
     _.forEach(electionDataByCountry, function(item, key) {
@@ -352,7 +313,7 @@ function upDateCountries(){
     } );   
  }
 
- function upDateTexts(d){
+var upDateTexts = function(d){
     var dateHolder = document.getElementById("dateDiv");
 
     var htmlStr = '<span class="bolder">'+moment(d.compDate).format('MMM YYYY')+'</span>';
@@ -363,13 +324,31 @@ function upDateCountries(){
     dateHolder.innerHTML = htmlStr;
 
     
-    htmlStr = '<div class="a-key explainer">explainer text goes here text goes here text goes here</div>';
+    htmlStr = '<div class="a-key explainer">Oh explainer text goes here text goes here text goes here</div>';
 
     var keyHolder = document.getElementById("keyDiv");
 
     keyHolder.innerHTML = htmlStr;
     
  }
+
+var stopPropagation = function() {
+        d3.event.stopPropagation();
+      }  
+
+
+var upDateMapView = function(n){
+    _.forEach(electionDataByCountry, function(item, key) {
+        _.forEach(item, function(obj){
+                if(obj.compDate < n){
+                    item.govNow = obj.leftorright;
+                }
+        })
+    }) 
+    selectedDate = n;
+    upDateCountries();
+
+}
 
 
 function getCurrClipArr(s){
@@ -411,168 +390,167 @@ function manualDateFormat(s){
     return(s) 
 }
 
-function addD3AreaChart(data){
+// function addD3AreaChart(data){
+//        var width = 180 ,//- margin.left - margin.right
+//         height = 420 - margin.top - margin.bottom;
 
-       var width = 180 ,//- margin.left - margin.right
-        height = 420 - margin.top - margin.bottom;
+//         var parseDate = d3.time.format("%d-%b-%Y").parse;
 
-        var parseDate = d3.time.format("%d-%b-%Y").parse;
+//         var x = d3.scale.linear()
+//             .range([0, width-(margin.left + margin.right) ]);
 
-        var x = d3.scale.linear()
-            .range([0, width-(margin.left + margin.right) ]);
+//         var y = d3.time.scale()
+//             .range([height, 0]);
 
-        var y = d3.time.scale()
-            .range([height, 0]);
+//         var xAxis = d3.svg.axis()
+//             .scale(x)
+//             .orient("bottom");
 
-        var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom");
+//         var yAxis = d3.svg.axis()
+//             .scale(y)
+//             .orient("right")
+//             .tickSize((width - margin.left - margin.right),0);
 
-        var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("right")
-            .tickSize((width - margin.left - margin.right),0);
+//         var areaR = d3.svg.area()
+//             .x0(function(d) { return x(d.rightValue); })
+//             .x1((width/2)-margin.right)
+//             .y(function(d) { return y(d.date); });
 
-        var areaR = d3.svg.area()
-            .x0(function(d) { return x(d.rightValue); })
-            .x1((width/2)-margin.right)
-            .y(function(d) { return y(d.date); });
-
-        var areaL = d3.svg.area()
-            .x0(function(d) { return x(d.leftValue * -1); })
-            .x1((width/2)-margin.left)
-            .y(function(d) { return y(d.date); }); 
+//         var areaL = d3.svg.area()
+//             .x0(function(d) { return x(d.leftValue * -1); })
+//             .x1((width/2)-margin.left)
+//             .y(function(d) { return y(d.date); }); 
            
 
-        var dateDivHolder = d3.select("#areaChartHolder").append("div")            
-            .attr("class","date-div")
-            .attr("id","dateDiv")
-            .style("margin", "0 "+(margin.left + margin.right)+"px 0 0")
-            .style("padding", "0 0 12px 0");
+//         var dateDivHolder = d3.select("#areaChartHolder").append("div")            
+//             .attr("class","date-div")
+//             .attr("id","dateDiv")
+//             .style("margin", "0 "+(margin.left + margin.right)+"px 0 0")
+//             .style("padding", "0 0 12px 0");
 
 
-        var svg = d3.select("#areaChartHolder").append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height) //+ margin.top + margin.bottom
-          .append("g")
-            .attr("transform", "translate(" + margin.left + ", 0)");//" + margin.top + "
+//         var svg = d3.select("#areaChartHolder").append("svg")
+//             .attr("width", width + margin.left + margin.right)
+//             .attr("height", height) //+ margin.top + margin.bottom
+//           .append("g")
+//             .attr("transform", "translate(" + margin.left + ", 0)");//" + margin.top + "
 
-        var keyDivHolder = d3.select("#areaChartHolder").append("div")            
-            .attr("class","date-div")
-            .attr("id","keyDiv")
-            .style("margin-right", (margin.left + margin.right)+"px");      
+//         var keyDivHolder = d3.select("#areaChartHolder").append("div")            
+//             .attr("class","date-div")
+//             .attr("id","keyDiv")
+//             .style("margin-right", (margin.left + margin.right)+"px");      
 
-        data.forEach(function(d) {
-             d.date = parseDate(d.date);
-          });
+//         data.forEach(function(d) {
+//              d.date = parseDate(d.date);
+//           });
 
-        y.domain(d3.extent(data, function(d) { return d.date; }));
-        x.domain([-20, d3.max(data, function(d) { return d.close; })]);
+//         y.domain(d3.extent(data, function(d) { return d.date; }));
+//         x.domain([-20, d3.max(data, function(d) { return d.close; })]);
 
-        svg.append("path")
-            .datum(data)
-            .attr("class", "area-right")
-            .attr("d", areaR);
+//         svg.append("path")
+//             .datum(data)
+//             .attr("class", "area-right")
+//             .attr("d", areaR);
 
-        svg.append("path")
-            .datum(data)
-            .attr("class", "area-left")
-            .attr("d", areaL);    
+//         svg.append("path")
+//             .datum(data)
+//             .attr("class", "area-left")
+//             .attr("d", areaL);    
 
-        svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate( 0 ," + height + ")")
-            .call(xAxis);
+//         svg.append("g")
+//             .attr("class", "x axis")
+//             .attr("transform", "translate( 0 ," + height + ")")
+//             .call(xAxis);
 
-        svg.append("line")
-              .attr("x1", width - margin.right)
-              .attr("stroke","#333")
-              .attr("x2", -30);
+//         svg.append("line")
+//               .attr("x1", width - margin.right)
+//               .attr("stroke","#333")
+//               .attr("x2", -30);
 
-        svg.append("line")
-              .attr("x1", width - margin.right)
-              .attr("stroke","#333")
-              .attr("x2", -30)
-              .attr("transform", "translate( 0 , "+ height +" )");      
+//         svg.append("line")
+//               .attr("x1", width - margin.right)
+//               .attr("stroke","#333")
+//               .attr("x2", -30)
+//               .attr("transform", "translate( 0 , "+ height +" )");      
 
-        svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis)
-          .selectAll("text")
-            .attr("y", -6)
-            .attr("x", -18)
-            .style("text-anchor", "start");
+//         svg.append("g")
+//             .attr("class", "y axis")
+//             .call(yAxis)
+//           .selectAll("text")
+//             .attr("y", -6)
+//             .attr("x", -18)
+//             .style("text-anchor", "start");
        
-      // .append("text")
-      //   .attr("transform", "rotate(-90)")
-      //   .attr("y", "200")
-      //   .attr("dy", "240")
-      //   .style("text-anchor", "end")
-      //   .text(" ");
+//       // .append("text")
+//       //   .attr("transform", "rotate(-90)")
+//       //   .attr("y", "200")
+//       //   .attr("dy", "240")
+//       //   .style("text-anchor", "end")
+//       //   .text(" ");
 
 
-          var focus = svg.append("g")
-              .attr("class", "focus");
+//           var focus = svg.append("g")
+//               .attr("class", "focus");
               
-          focus.append("line")
-              .attr("x1", width-margin.left-margin.right)
-              .attr("x2", 0);//(width-margin.left-margin.right)/2
+//           focus.append("line")
+//               .attr("x1", width-margin.left-margin.right)
+//               .attr("x2", 0);//(width-margin.left-margin.right)/2
 
-          // focus.append("rect")
-          //     .attr("class", "svg-underlay")
-          //     .attr("width", 60)
-          //     .attr("height", 18)
-          //     .attr("x", width-45)
-          //     .attr("y",8)
+//           // focus.append("rect")
+//           //     .attr("class", "svg-underlay")
+//           //     .attr("width", 60)
+//           //     .attr("height", 18)
+//           //     .attr("x", width-45)
+//           //     .attr("y",8)
 
-          // focus.append("text")
-          //     .attr("dx", width-margin.left-margin.right)
-          //     .attr("dy", 0);
+//           // focus.append("text")
+//           //     .attr("dx", width-margin.left-margin.right)
+//           //     .attr("dy", 0);
 
-          focus.append("circle")
-              .attr("r", 3)
-              .attr("transform", "translate( "+ (width-margin.left-margin.right)/2 +" , 0 )");
+//           focus.append("circle")
+//               .attr("r", 3)
+//               .attr("transform", "translate( "+ (width-margin.left-margin.right)/2 +" , 0 )");
 
-          //svg.append("text").attr("transform", "translate( 90 , 120)").text(function() { return "Left" });  
+//           //svg.append("text").attr("transform", "translate( 90 , 120)").text(function() { return "Left" });  
 
-          svg.append("rect")
-              .attr("class", "svg-overlay")
-              .attr("id", "svgOverlay")
-              .attr("width", width)
-              .attr("height", height)
-              .on("mousemove", mousemove);
+//           svg.append("rect")
+//               .attr("class", "svg-overlay")
+//               .attr("id", "svgOverlay")
+//               .attr("width", width)
+//               .attr("height", height)
+//               .on("mousemove", mousemove);
 
-              //.call(drag);
-              //
-var start = data[0].date; 
-var step = 1000 * 60 * 60 * 24 * 91.25; // approx 91 days - a quarter of year
+//               //.call(drag);
+//               //
+// var start = data[0].date; 
+// var step = 1000 * 60 * 60 * 24 * 91.25; // approx 91 days - a quarter of year
 
-var offsets = data.map(function(t, i) { return [Date.UTC(t.date.getFullYear(), t.date.getMonth(), t.date.getDate()), t.lrCount, t]; });
+// var offsets = data.map(function(t, i) { return [Date.UTC(t.date.getFullYear(), t.date.getMonth(), t.date.getDate()), t.lrCount, t]; });
 
-function mousemove() {  
-          stopPropagation()
-          var d = Math.round(y.invert(d3.mouse(this)[1]));
-          var obj = offsets[Math.round((d-start)/step)];
+// function mousemove() {  
+//           stopPropagation()
+//           var d = Math.round(y.invert(d3.mouse(this)[1]));
+//           var obj = offsets[Math.round((d-start)/step)];
 
-          focus.select("g").attr("transform", "translate( 0 ,"+ d3.mouse(this)[1] +" )");
-          focus.select("circle").attr("transform", "translate( "+ (width-margin.left-margin.right)/2 +" , "+ d3.mouse(this)[1] +" )");
-          //focus.select("text").attr("transform", "translate( 0 , "+ (d3.mouse(this)[1] )+" )").text(function() { return moment(obj[2].compDate).format('MMM YYYY') });  
-          //focus.select("rect").attr("transform", "translate( 0 , "+ (d3.mouse(this)[1] - 20 )+" )");
-          focus.select("line").attr("transform", "translate( 0 , "+ (d3.mouse(this)[1])+" )");
-          //focus.select(".x").attr("transform", "translate(" + x(d[0]) + ",0)");
-          //focus.select(".y").attr("transform", "translate(0," + y(d[1]) + ")");
-          svg.selectAll(".x.axis path").style("fill-opacity", Math.random()); // XXX Chrome redraw bug
+//           focus.select("g").attr("transform", "translate( 0 ,"+ d3.mouse(this)[1] +" )");
+//           focus.select("circle").attr("transform", "translate( "+ (width-margin.left-margin.right)/2 +" , "+ d3.mouse(this)[1] +" )");
+//           //focus.select("text").attr("transform", "translate( 0 , "+ (d3.mouse(this)[1] )+" )").text(function() { return moment(obj[2].compDate).format('MMM YYYY') });  
+//           //focus.select("rect").attr("transform", "translate( 0 , "+ (d3.mouse(this)[1] - 20 )+" )");
+//           focus.select("line").attr("transform", "translate( 0 , "+ (d3.mouse(this)[1])+" )");
+//           //focus.select(".x").attr("transform", "translate(" + x(d[0]) + ",0)");
+//           //focus.select(".y").attr("transform", "translate(0," + y(d[1]) + ")");
+//           svg.selectAll(".x.axis path").style("fill-opacity", Math.random()); // XXX Chrome redraw bug
 
-          upDateMapView(obj[2].compDate)
-          upDateTexts(obj[2])
+//           upDateMapView(obj[2].compDate)
+//           upDateTexts(obj[2])
 
-        }
+//         }
 
-      function stopPropagation() {
-        d3.event.stopPropagation();
-      }  
+//       function stopPropagation() {
+//         d3.event.stopPropagation();
+//       }  
 
       
-}
+// }
 
 

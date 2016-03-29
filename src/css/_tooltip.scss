@@ -3,7 +3,7 @@
     top:0;
     left:0;
     //width:210px;
-    background-color: rgba(255,255,255,1);
+    background-color: rgba(255,255,255,0.9);
 
     padding:5px;
     
@@ -56,15 +56,14 @@
         text-transform: capitalize;
     }
     div.indicator {
+        width:100%;
         float: left;
-        border-right: 1px solid #ddd;
-        padding-left: 10px;
-        padding-right: 10px;
+        border-bottom: 1px solid #ddd;
+        
         text-align: left;
         
         span {
             display: block;
-
         }
 
         span.value {
@@ -73,10 +72,12 @@
             // font-size: 20px;
             // line-height: 22px;
         }
+
         .title {
             @include fs-textSans(1);
         }
     }
+    
     div.indicator:last-child {
         border-right: none;
     }
@@ -92,6 +93,7 @@
     background: #fff;
     border: 1px solid #aaa;
 }
+
 .arrow_box:after, .arrow_box:before {
     right: 100%;
     top: 30px;
@@ -101,7 +103,6 @@
     width: 0;
     position: absolute;
     pointer-events: none;
-
 }
 
 .arrow_box:after {
@@ -110,6 +111,7 @@
     border-width: 10px;
     margin-top: -10px;
 }
+
 .arrow_box:before {
     border-color: rgba(170, 170, 170, 0);
     border-right-color: #777;

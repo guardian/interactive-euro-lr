@@ -1,4 +1,6 @@
-export default function addD3AreaChart(data, margin){
+export default function addD3AreaChart(data, margin, electionDataByCountry, selectedDate, upDateCountries, upDateTexts, upDateMapView, stopPropagation){
+
+  console.log(upDateTexts)
 
        var width = 180 ,//- margin.left - margin.right
         height = 420 - margin.top - margin.bottom;
@@ -30,13 +32,11 @@ export default function addD3AreaChart(data, margin){
             .x1((width/2)-margin.left)
             .y(function(d) { return y(d.date); }); 
            
-
         var dateDivHolder = d3.select("#areaChartHolder").append("div")            
             .attr("class","date-div")
             .attr("id","dateDiv")
             .style("margin", "0 "+(margin.left + margin.right)+"px 0 0")
             .style("padding", "0 0 12px 0");
-
 
         var svg = d3.select("#areaChartHolder").append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -136,8 +136,9 @@ var step = 1000 * 60 * 60 * 24 * 91.25; // approx 91 days - a quarter of year
 
 var offsets = data.map(function(t, i) { return [Date.UTC(t.date.getFullYear(), t.date.getMonth(), t.date.getDate()), t.lrCount, t]; });
 
-function mousemove() {  
-          stopPropagation()
+  function mousemove() {  
+          stopPropagation();
+
           var d = Math.round(y.invert(d3.mouse(this)[1]));
           var obj = offsets[Math.round((d-start)/step)];
 
@@ -154,10 +155,5 @@ function mousemove() {
           upDateTexts(obj[2])
 
         }
-
-      function stopPropagation() {
-        d3.event.stopPropagation();
-      }  
-
-      
+    
 }

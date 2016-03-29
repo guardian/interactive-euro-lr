@@ -3,6 +3,11 @@
 
 .europe {
     fill: $neutral-4;//
+    -webkit-transition: fill .5s ease;
+	 	-moz-transition: fill .5s ease;
+	 	-o-transition: fill .5s ease;
+	 	transition: fill .5s ease;
+
 }
 
 .none-europe {
@@ -12,11 +17,16 @@
 .left-wing {
     fill: $c-left;
     background-color: $c-left;
+    
 }
 
 .right-wing {
     fill: $c-right;
     background-color: $c-right;
+   //  -webkit-transition: fill .5s ease;
+	 	// -moz-transition: fill .5s ease;
+	 	// -o-transition: fill .5s ease;
+	 	// transition: fill .5s ease;
 }
 
 .totalitarian {
